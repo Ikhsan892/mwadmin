@@ -25,11 +25,11 @@ const routes = [
         exact: true,
         component: lazy(() => import('views/Login'))
       },
-      {
-        path: '/auth/register',
-        exact: true,
-        component: lazy(() => import('views/Register'))
-      },
+      // {
+      //   path: '/auth/register',
+      //   exact: true,
+      //   component: lazy(() => import('views/Register'))
+      // },
       {
         component: () => <Redirect to="/errors/error-404" />
       }
