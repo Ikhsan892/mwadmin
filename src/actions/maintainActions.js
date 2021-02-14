@@ -1,0 +1,2 @@
+export const ON_MAINTAINED = 'ON_MAINTAINED';
+export const ON_MAINTAIN_FALSE = 'ON_MAINTAIN_FALSE';
