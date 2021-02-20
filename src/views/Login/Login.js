@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import {
   Card,
@@ -7,10 +7,13 @@ import {
   Typography,
   Divider
 } from '@material-ui/core';
+import MuiAlert from '@material-ui/lab/Alert';
 import LockIcon from '@material-ui/icons/Lock';
-
+import { useSelector } from 'react-redux';
+import { useCookies } from 'react-cookie';
 import { Page } from 'components';
 import gradients from 'utils/gradients';
+import useRouter from 'utils/useRouter';
 import { LoginForm } from './components';
 
 const useStyles = makeStyles(theme => ({
@@ -68,21 +71,34 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(2, 0)
   }
 }));
-
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 const Login = () => {
   const classes = useStyles();
-
+  const { messageError, token, loading, status } = useSelector(
+    state => state.session
+  );
+  const router = useRouter();
+  const [cookies, setCookies] = useCookies(['token']);
+  useEffect(() => {
+    if (status === 200) {
+      setCookies('token', token, { path: '/' });
+      router.history.push('/');
+    }
+  }, [status]);
   return (
     <Page className={classes.root} title="Login">
       <Card className={classes.card}>
         <CardContent className={classes.content}>
           <LockIcon className={classes.icon} />
           <Typography gutterBottom variant="h3">
-            Masuk
+            {loading ? 'Loading' : 'Masuk'}
           </Typography>
           <Typography variant="subtitle2">
             Masuk untuk mengatur semua
           </Typography>
+          {messageError ? <Alert severity="error">{messageError}</Alert> : ''}
           <LoginForm className={classes.loginForm} />
           <Divider className={classes.divider} />
         </CardContent>

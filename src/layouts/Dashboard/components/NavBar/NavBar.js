@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import { Drawer, Divider, Paper, Avatar, Typography } from '@material-ui/core';
 import { Hidden } from '@material-ui/core';
-
+import Skeleton from '@material-ui/lab/Skeleton';
 import useRouter from 'utils/useRouter';
 import { Navigation } from 'components';
 import navigationConfig from './navigationConfig';
@@ -30,7 +30,8 @@ const useStyles = makeStyles(theme => ({
     height: 60
   },
   name: {
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
+    textTransform: 'capitalize'
   },
   divider: {
     marginTop: theme.spacing(2)
@@ -58,20 +59,27 @@ const NavBar = props => {
   const navbarContent = (
     <div className={classes.content}>
       <div className={classes.profile}>
-        <Avatar
-          alt="Person"
-          className={classes.avatar}
-          component={RouterLink}
-          src={session.user.avatar}
-          to="/profile/1/timeline"
-        />
-        <Typography
-          className={classes.name}
-          variant="h4"
-        >
-          {session.user.first_name} {session.user.last_name}
+        {session.loading ? (
+          <Skeleton variant="circle" width={60} height={60} animation="wave" />
+        ) : (
+          <Avatar
+            alt="Person"
+            className={classes.avatar}
+            component={RouterLink}
+            src={session.user.avatar}
+            to="/profile/1/timeline"
+          />
+        )}
+        <Typography className={classes.name} variant="h4">
+          {session.loading ? (
+            <Skeleton width={30} />
+          ) : (
+            `${session.user.first_name} ${session.user.last_name}`
+          )}
         </Typography>
-        <Typography variant="body2">{session.user.bio}</Typography>
+        <Typography variant="body2">
+          {session.loading ? <Skeleton width={30} /> : session.user.bio}
+        </Typography>
       </div>
       <Divider className={classes.divider} />
       <nav className={classes.navigation}>
@@ -94,12 +102,8 @@ const NavBar = props => {
           anchor="left"
           onClose={onMobileClose}
           open={openMobile}
-          variant="temporary"
-        >
-          <div
-            {...rest}
-            className={clsx(classes.root, className)}
-          >
+          variant="temporary">
+          <div {...rest} className={clsx(classes.root, className)}>
             {navbarContent}
           </div>
         </Drawer>
@@ -109,8 +113,7 @@ const NavBar = props => {
           {...rest}
           className={clsx(classes.root, className)}
           elevation={1}
-          square
-        >
+          square>
           {navbarContent}
         </Paper>
       </Hidden>

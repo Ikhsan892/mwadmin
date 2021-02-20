@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
+import { Link } from 'react-router-dom';
 import { Grid, Typography, Button } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
@@ -25,7 +26,11 @@ const Header = props => {
           </Typography>
         </Grid>
         <Grid item>
-          <Button color="primary" variant="contained">
+          <Button
+            color="primary"
+            variant="contained"
+            to="/management/orders/create"
+            component={Link}>
             Buat Orderan
           </Button>
         </Grid>

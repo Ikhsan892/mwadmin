@@ -134,6 +134,11 @@ const routes = [
         component: lazy(() => import('views/OrderManagementList'))
       },
       {
+        path: '/management/orders/create',
+        exact: true,
+        component: lazy(() => import('views/OrderManagementCreate'))
+      },
+      {
         path: '/management/orders/:id',
         exact: true,
         component: lazy(() => import('views/OrderManagementDetails'))
@@ -282,6 +287,11 @@ const routes = [
         path: '/management/orders',
         exact: true,
         component: lazy(() => import('views/OrderManagementList'))
+      },
+      {
+        path: '/management/orders/create',
+        exact: true,
+        component: lazy(() => import('views/OrderManagementCreate'))
       },
       {
         path: '/management/orders/:id',

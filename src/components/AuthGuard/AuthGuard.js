@@ -1,17 +1,15 @@
 import React, { Fragment, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-
 import useRouter from 'utils/useRouter';
 
 // Example of user roles: ['GUEST', 'USER', 'ADMIN'];
 
 const AuthGuard = props => {
   const { roles, children } = props;
-
+  const dispatch = useDispatch();
   const session = useSelector(state => state.session);
   const router = useRouter();
-
   useEffect(() => {
     if (!session.loggedIn || !session.user) {
       router.history.push('/auth/login');

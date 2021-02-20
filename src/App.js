@@ -17,6 +17,7 @@ import './mock';
 import './assets/scss/index.scss';
 
 const history = createBrowserHistory();
+
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {

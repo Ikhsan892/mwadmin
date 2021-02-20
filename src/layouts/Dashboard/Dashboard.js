@@ -1,11 +1,14 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
+import useRouter from 'utils/useRouter';
 import { renderRoutes } from 'react-router-config';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { LinearProgress } from '@material-ui/core';
+import { useCookies } from 'react-cookie';
 import { AuthGuard } from 'components';
-import { useSelector } from 'react-redux';
-import { NavBar, TopBar } from './components';
+import { useSelector, useDispatch } from 'react-redux';
+import { NavBar, TopBar, Interceptors } from './components';
+import { userData } from 'actions';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -38,10 +41,12 @@ const useStyles = makeStyles(() => ({
 
 const Dashboard = props => {
   const { route } = props;
+  const dispatch = useDispatch();
   const classes = useStyles();
   const { isMaintain } = useSelector(state => state.maintained);
+  const [cookies, setCookies] = useCookies(['token']);
   const [openNavBarMobile, setOpenNavBarMobile] = useState(false);
-
+  const router = useRouter();
   const handleNavBarMobileOpen = () => {
     setOpenNavBarMobile(true);
   };
@@ -50,8 +55,17 @@ const Dashboard = props => {
     setOpenNavBarMobile(false);
   };
 
+  useEffect(() => {
+    if (cookies.token) {
+      dispatch(userData(cookies.token));
+    } else {
+      router.history.push('/auth/login');
+    }
+  }, []);
+
   return (
     <div className={classes.root}>
+      <Interceptors />
       <TopBar
         className={classes.topBar}
         onOpenNavBarMobile={handleNavBarMobileOpen}
@@ -64,17 +78,13 @@ const Dashboard = props => {
         />
         <main className={classes.content}>
           {isMaintain ? (
-            <AuthGuard roles={['ADMIN']}>
-              <Suspense fallback={<LinearProgress />}>
-                {renderRoutes(route.routesAllowed)}
-              </Suspense>
-            </AuthGuard>
+            <Suspense fallback={<LinearProgress />}>
+              {renderRoutes(route.routesAllowed)}
+            </Suspense>
           ) : (
-            <AuthGuard roles={['ADMIN']}>
-              <Suspense fallback={<LinearProgress />}>
-                {renderRoutes(route.routes)}
-              </Suspense>
-            </AuthGuard>
+            <Suspense fallback={<LinearProgress />}>
+              {renderRoutes(route.routes)}
+            </Suspense>
           )}
         </main>
       </div>
