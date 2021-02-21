@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import validate from 'validate.js';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import { Button, TextField } from '@material-ui/core';
 import { login } from 'actions';
@@ -39,7 +39,7 @@ const LoginForm = props => {
   const { className, ...rest } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
-
+  const { loading } = useSelector(state => state.session);
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
@@ -117,11 +117,11 @@ const LoginForm = props => {
       <Button
         className={classes.submitButton}
         color="secondary"
-        disabled={!formState.isValid}
+        disabled={!formState.isValid || loading}
         size="large"
         type="submit"
         variant="contained">
-        Masuk
+        {loading ? "Loading..." : "Masuk"}
       </Button>
     </form>
   );

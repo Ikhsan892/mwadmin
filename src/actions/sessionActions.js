@@ -30,14 +30,19 @@ export const login = (email, password) => {
               token: resp.data.token
             });
           }
+          dispatch({
+            type: SESSION_REQUEST_LOGIN_FALSE
+          });
         })
         .catch(err => {
           if (err.message) {
             alert(err.message);
+            dispatch({
+              type: SESSION_REQUEST_LOGIN_FALSE
+            });
           }
         });
     });
-
     dispatch({
       type: SESSION_REQUEST_LOGIN_FALSE
     });

@@ -76,9 +76,7 @@ function Alert(props) {
 }
 const Login = () => {
   const classes = useStyles();
-  const { messageError, token, loading, status } = useSelector(
-    state => state.session
-  );
+  const { messageError, token, status } = useSelector(state => state.session);
   const router = useRouter();
   const [cookies, setCookies] = useCookies(['token']);
   useEffect(() => {
@@ -93,7 +91,7 @@ const Login = () => {
         <CardContent className={classes.content}>
           <LockIcon className={classes.icon} />
           <Typography gutterBottom variant="h3">
-            {loading ? 'Loading' : 'Masuk'}
+            Masuk
           </Typography>
           <Typography variant="subtitle2">
             Masuk untuk mengatur semua

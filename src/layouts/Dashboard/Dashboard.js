@@ -78,13 +78,17 @@ const Dashboard = props => {
         />
         <main className={classes.content}>
           {isMaintain ? (
-            <Suspense fallback={<LinearProgress />}>
-              {renderRoutes(route.routesAllowed)}
-            </Suspense>
+            <AuthGuard roles={['ADMIN', 'USER']}>
+              <Suspense fallback={<LinearProgress />}>
+                {renderRoutes(route.routesAllowed)}
+              </Suspense>
+            </AuthGuard>
           ) : (
-            <Suspense fallback={<LinearProgress />}>
-              {renderRoutes(route.routes)}
-            </Suspense>
+            <AuthGuard roles={['ADMIN', 'USER']}>
+              <Suspense fallback={<LinearProgress />}>
+                {renderRoutes(route.routes)}
+              </Suspense>
+            </AuthGuard>
           )}
         </main>
       </div>

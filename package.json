@@ -76,7 +76,8 @@
     "redux-thunk": "^2.3.0",
     "rupiah-format": "^1.0.0",
     "uuid": "^3.3.2",
-    "validate.js": "^0.12.0"
+    "validate.js": "^0.12.0",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "eslint": "^5.16.0",

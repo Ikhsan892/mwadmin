@@ -9,33 +9,15 @@ function sleep(delay = 0) {
   });
 }
 
-const AutoComplete = ({ options, handleSelected }) => {
+const AutoComplete = ({
+  label,
+  options,
+  handleSelected,
+  showingLabel,
+  ...props
+}) => {
   const [open, setOpen] = React.useState(false);
   const loading = open && options.length === 0;
-
-  React.useEffect(() => {
-    let active = true;
-
-    if (!loading) {
-      return undefined;
-    }
-
-    // (async () => {
-    //   const response = await fetch(
-    //     'https://country.register.gov.uk/records.json?page-size=5000'
-    //   );
-    //   await sleep(1e3); // For demo purposes.
-    //   const countries = await response.json();
-
-    //   if (active) {
-    //     setOptions(Object.keys(countries).map(key => countries[key].item[0]));
-    //   }
-    // })();
-
-    return () => {
-      active = false;
-    };
-  }, [loading]);
 
   React.useEffect(() => {
     // if (!open) {
@@ -44,26 +26,34 @@ const AutoComplete = ({ options, handleSelected }) => {
   }, [open]);
   return (
     <Autocomplete
-      id="customers-list"
+      {...props}
       style={{ width: 300 }}
       open={open}
-      onChange={handleSelected}
       onOpen={() => {
         setOpen(true);
       }}
       onClose={() => {
         setOpen(false);
       }}
-      getOptionSelected={(option, value) => option.name === value.name}
-      getOptionLabel={option => `${option.nama_depan} ${option.nama_belakang}`}
+      getOptionSelected={(option, value) =>
+        option[showingLabel] === value[showingLabel]
+      }
+      getOptionLabel={option =>
+        label === 'Pelanggan'
+          ? `${option.nama_depan} ${option.nama_belakang}`
+          : option[showingLabel]
+      }
       options={options}
       loading={loading}
-      fullWidth
       renderInput={params => (
         <TextField
           {...params}
-          label="Pelanggan"
+          label={label}
           variant="outlined"
+          error={props.error}
+          helperText={props.helperText}
+          onBlur={props.onBlur}
+          fullWidth
           InputProps={{
             ...params.InputProps,
             endAdornment: (

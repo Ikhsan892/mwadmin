@@ -13,45 +13,46 @@ const Interceptors = () => {
   const [messageOpen, setMessageOpen] = useState(false);
   const router = useRouter();
   const [cookies] = useCookies(['token']);
-  useEffect(() => {
-    client.interceptors.request.use(
-      function(config) {
-        config.headers['authorization'] = `Bearer ${cookies.token}`;
-        return config;
-      },
-      function(error) {
-        return Promise.reject(error);
-      }
-    );
+  client.interceptors.request.use(
+    function(config) {
+      client.defaults.headers.common[
+        'Authorization'
+      ] = `Bearer ${cookies.token}`;
+      return config;
+    },
+    function(error) {
+      return Promise.reject(error);
+    }
+  );
 
-    client.interceptors.response.use(
-      response => {
-        return response;
-      },
-      err => {
-        if (err.response) {
-          if (
-            err.response?.status === 401 &&
-            err.response?.data === 'Unauthorized'
-          ) {
-            router.history.push('/auth/login');
-          } else if (
-            err.response?.status === 403 &&
-            (err.response?.data.message === 'token invalid' ||
-              err.response?.data.message === 'jwt expired')
-          ) {
-            router.history.push('/auth/login');
-          } else {
-            return Promise.reject(err);
-          }
+  client.interceptors.response.use(
+    response => {
+      return response;
+    },
+    err => {
+      if (err.response) {
+        if (
+          err.response?.status === 401 &&
+          err.response?.data === 'Unauthorized'
+        ) {
+          router.history.push('/auth/login');
+        } else if (
+          err.response?.status === 403 &&
+          (err.response?.data.message === 'token invalid' ||
+            err.response?.data.message === 'jwt expired')
+        ) {
+          router.history.push('/auth/login');
         } else {
-          setMessageError(err.message);
-          setMessageOpen(true);
           return Promise.reject(err);
         }
+      } else {
+        setMessageError(err.message);
+        setMessageOpen(true);
+        return Promise.reject(err);
       }
-    );
-  }, []);
+    }
+  );
+  useEffect(() => {}, []);
   return (
     <>
       <Snackbar
