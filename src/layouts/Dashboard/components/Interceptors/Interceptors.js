@@ -3,6 +3,8 @@ import { Snackbar } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
 import useRouter from 'utils/useRouter';
 import client from 'utils/axios';
+import { useDispatch } from 'react-redux';
+import { userData, logout } from 'actions';
 import { useCookies } from 'react-cookie';
 
 function Alert(props) {
@@ -12,47 +14,39 @@ const Interceptors = () => {
   const [messageError, setMessageError] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
   const router = useRouter();
-  const [cookies] = useCookies(['token']);
-  client.interceptors.request.use(
-    function(config) {
-      client.defaults.headers.common[
-        'Authorization'
-      ] = `Bearer ${cookies.token}`;
-      return config;
-    },
-    function(error) {
-      return Promise.reject(error);
-    }
-  );
+  const dispatch = useDispatch();
+  const [cookies, removeCookie] = useCookies(['token']);
 
-  client.interceptors.response.use(
-    response => {
-      return response;
-    },
-    err => {
-      if (err.response) {
-        if (
-          err.response?.status === 401 &&
-          err.response?.data === 'Unauthorized'
-        ) {
-          router.history.push('/auth/login');
-        } else if (
-          err.response?.status === 403 &&
-          (err.response?.data.message === 'token invalid' ||
-            err.response?.data.message === 'jwt expired')
-        ) {
-          router.history.push('/auth/login');
+  useEffect(() => {
+    client.interceptors.response.use(
+      response => {
+        return response;
+      },
+      err => {
+        if (err.response) {
+          if (err.response?.status === 401) {
+            removeCookie('token');
+            dispatch(logout());
+            router.history.push('/auth/login');
+          } else if (
+            err.response?.status === 403 &&
+            (err.response?.data.message === 'token invalid' ||
+              err.response?.data.message === 'jwt expired')
+          ) {
+            removeCookie('token');
+            dispatch(logout());
+            router.history.push('/auth/login');
+          } else {
+            return Promise.reject(err);
+          }
         } else {
+          setMessageError(err.message);
+          setMessageOpen(true);
           return Promise.reject(err);
         }
-      } else {
-        setMessageError(err.message);
-        setMessageOpen(true);
-        return Promise.reject(err);
       }
-    }
-  );
-  useEffect(() => {}, []);
+    );
+  });
   return (
     <>
       <Snackbar

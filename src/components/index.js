@@ -22,3 +22,4 @@ export { default as SearchBar } from './SearchBar';
 export { default as StackAvatars } from './StackAvatars';
 export { default as StatusBullet } from './StatusBullet';
 export { default as TableEditBar } from './TableEditBar';
+export { default as NegaraField } from './NegaraField'

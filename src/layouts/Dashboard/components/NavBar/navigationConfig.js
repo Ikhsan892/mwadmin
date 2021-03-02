@@ -19,7 +19,7 @@ import { Label } from 'components';
 
 export default [
   {
-    title: 'Pages',
+    title: 'Statistik',
     pages: [
       {
         title: 'Overview',
@@ -40,7 +40,12 @@ export default [
             href: '/dashboards/analytics'
           }
         ]
-      },
+      }
+    ]
+  },
+  {
+    title: 'Orderan & Pelanggan',
+    pages: [
       {
         title: 'Manajemen',
         href: '/management',
@@ -83,7 +88,12 @@ export default [
             label: () => <Label color={colors.blue[500]}>Allow</Label>
           }
         ]
-      },
+      }
+    ]
+  },
+  {
+    title: 'Member Performance',
+    pages: [
       {
         title: 'Social Feed',
         href: '/social-feed',
@@ -142,7 +152,12 @@ export default [
             href: '/projects/1/subscribers'
           }
         ]
-      },
+      }
+    ]
+  },
+  {
+    title: 'Invoices',
+    pages: [
       {
         title: 'Invoice',
         href: '/invoices/1',

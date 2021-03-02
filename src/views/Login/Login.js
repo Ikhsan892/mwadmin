@@ -76,15 +76,17 @@ function Alert(props) {
 }
 const Login = () => {
   const classes = useStyles();
-  const { messageError, token, status } = useSelector(state => state.session);
+  const { messageError, token, loggedIn } = useSelector(state => state.session);
   const router = useRouter();
   const [cookies, setCookies] = useCookies(['token']);
   useEffect(() => {
-    if (status === 200) {
+    if (!loggedIn && token === '') {
+      router.history.push('/auth/login');
+    } else {
       setCookies('token', token, { path: '/' });
       router.history.push('/');
     }
-  }, [status]);
+  }, [loggedIn, token]);
   return (
     <Page className={classes.root} title="Login">
       <Card className={classes.card}>

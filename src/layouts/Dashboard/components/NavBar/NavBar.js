@@ -2,13 +2,23 @@ import React, { Fragment, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
-import { Drawer, Divider, Paper, Avatar, Typography } from '@material-ui/core';
+import {
+  Drawer,
+  Divider,
+  Paper,
+  Avatar,
+  Typography,
+  Button
+} from '@material-ui/core';
 import { Hidden } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import useRouter from 'utils/useRouter';
+import InputIcon from '@material-ui/icons/Input';
+import { useCookies } from 'react-cookie';
 import { Navigation } from 'components';
+import { logout } from 'actions';
 import navigationConfig from './navigationConfig';
 
 const useStyles = makeStyles(theme => ({
@@ -38,15 +48,29 @@ const useStyles = makeStyles(theme => ({
   },
   navigation: {
     marginTop: theme.spacing(2)
+  },
+  logout: {
+    marginTop: 10,
+    width: '100%'
+  },
+  iconInput: {
+    marginLeft: theme.spacing(2)
   }
 }));
 
 const NavBar = props => {
   const { openMobile, onMobileClose, className, ...rest } = props;
-
+  const [cookies, removeCookie, setCookies] = useCookies(['token']);
   const classes = useStyles();
   const router = useRouter();
+  const dispatch = useDispatch();
   const session = useSelector(state => state.session);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    removeCookie('token');
+    router.history.push('/auth/login');
+  };
 
   useEffect(() => {
     if (openMobile) {
@@ -72,16 +96,26 @@ const NavBar = props => {
         )}
         <Typography className={classes.name} variant="h4">
           {session.loading ? (
-            <Skeleton width={30} />
+            <Skeleton width={100} />
           ) : (
             `${session.user.first_name} ${session.user.last_name}`
           )}
         </Typography>
         <Typography variant="body2">
-          {session.loading ? <Skeleton width={30} /> : session.user.bio}
+          {session.loading ? <Skeleton width={100} /> : session.user.bio}
         </Typography>
       </div>
       <Divider className={classes.divider} />
+      <Hidden lgUp>
+        <Button
+          variant="outlined"
+          color="secondary"
+          className={classes.logout}
+          onClick={handleLogout}>
+          Sign Out <InputIcon className={classes.iconInput} />
+        </Button>
+      </Hidden>
+
       <nav className={classes.navigation}>
         {navigationConfig.map(list => (
           <Navigation

@@ -10,8 +10,8 @@ export const login = (email, password) => {
     dispatch({
       type: SESSION_REQUEST_LOGIN_TRUE
     });
-    await client.get('/sanctum/csrf-cookie').then(resp => {
-      client
+    await client.get('/sanctum/csrf-cookie').then(async resp => {
+      await client
         .post(`/api/user/login`, {
           email: email,
           password: password
@@ -23,7 +23,7 @@ export const login = (email, password) => {
               message: resp.data.message,
               status: resp.data.status
             });
-          } else {
+          } else if (resp.status === 201) {
             dispatch({
               type: SESSION_LOGIN,
               data: resp.data.user,
@@ -48,24 +48,16 @@ export const login = (email, password) => {
     });
   };
 };
-export const userData = token => {
+export const userData = () => {
   return async function(dispatch) {
     dispatch({
       type: SESSION_REQUEST_LOGIN_TRUE
     });
-    await client
-      .get('/api/user/detail', {
-        headers: {
-          authorization: `Bearer ${token}`
-        }
-      })
-      .then(resp => {
-        dispatch({
-          type: SESSION_LOGIN,
-          data: resp.data.user,
-          token: token
-        });
-      });
+    let res = await client.get('/api/user/detail');
+    dispatch({
+      type: SESSION_LOGIN,
+      data: res.data.user
+    });
     dispatch({
       type: SESSION_REQUEST_LOGIN_FALSE
     });

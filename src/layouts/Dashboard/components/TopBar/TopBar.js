@@ -22,6 +22,7 @@ import useRouter from 'utils/useRouter';
 import { useSelector } from 'react-redux';
 import { NotificationsPopover } from 'components';
 import { logout } from 'actions';
+import { useCookies } from 'react-cookie'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -62,7 +63,6 @@ const useStyles = makeStyles(theme => ({
 
 const TopBar = props => {
   const { onOpenNavBarMobile, className, ...rest } = props;
-
   const classes = useStyles();
   const { history } = useRouter();
   const dispatch = useDispatch();
@@ -70,6 +70,7 @@ const TopBar = props => {
   const [notifications, setNotifications] = useState([]);
   const [openNotifications, setOpenNotifications] = useState(false);
   const { isMaintain } = useSelector(state => state.maintained);
+  const [ cookies, setCookies ,removeCookie ] = useCookies(['token'])
 
   useEffect(() => {
     let mounted = true;
@@ -90,8 +91,9 @@ const TopBar = props => {
   }, []);
 
   const handleLogout = () => {
+    dispatch(logout());
+    removeCookie('token')
     history.push('/auth/login');
-    // dispatch(logout());
   };
 
   const handleNotificationsOpen = () => {

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, TextField, Switch, FormControlLabel } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { NegaraField } from 'components';
 import AutoComplete from './AutoComplete';
 import client from 'utils/axios';
 
 const CustomerForm = ({ ...props }) => {
   const [adaPelanggan, setAdaPelanggan] = useState(false);
   const [customers, setCustomers] = useState([]);
-  const [countries, setCountries] = useState([]);
 
   const handleChange = () => setAdaPelanggan(!adaPelanggan);
 
@@ -35,15 +34,6 @@ const CustomerForm = ({ ...props }) => {
 
   useEffect(() => {
     customersFetch();
-
-    //only country fetch ,
-    (async () => {
-      const response = await fetch(
-        'https://country.register.gov.uk/records.json?page-size=5000'
-      );
-      const countries = await response.json();
-      setCountries(Object.keys(countries).map(key => countries[key].item[0]));
-    })();
   }, []);
 
   return (
@@ -141,26 +131,107 @@ const CustomerForm = ({ ...props }) => {
             fullWidth
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={4}>
-          <Autocomplete
+        <Grid item xs={12} sm={6} md={6} lg={6}>
+          <TextField
+            required
             id="negara"
-            name="negara"
-            value={props.values.negara}
-            inputValue={props.values.negara}
-            onInputChange={(event, newInputValue) => {
-              props.setFieldValue('negara', newInputValue);
-            }}
+            label="Negara"
             onBlur={props.handleBlur}
-            error={props.touched.negara && Boolean(props.errors.negara)}
-            helperText={props.touched.negara && props.errors.no_telepon}
+            onChange={props.handleChange}
             value={props.values.negara}
-            onChange={(e, value) => props.setFieldValue('negara', value)}
-            id="controllable-states-demo"
-            options={countries}
-            style={{ width: '100%' }}
-            renderInput={params => (
-              <TextField {...params} label="Negara" variant="outlined" />
-            )}
+            error={props.touched.negara && Boolean(props.errors.negara)}
+            disabled={adaPelanggan}
+            helperText={props.touched.negara && props.errors.negara}
+            variant="outlined"
+            name="negara"
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={6} lg={6}>
+          <TextField
+            required
+            id="umur"
+            label="Umur"
+            onBlur={props.handleBlur}
+            onChange={props.handleChange}
+            value={props.values.umur}
+            error={props.touched.umur && Boolean(props.errors.umur)}
+            disabled={adaPelanggan}
+            helperText={props.touched.umur && props.errors.umur}
+            variant="outlined"
+            name="umur"
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4} lg={4}>
+          <TextField
+            required
+            id="provinsi"
+            label="Provinsi"
+            onBlur={props.handleBlur}
+            onChange={props.handleChange}
+            value={props.values.provinsi}
+            error={props.touched.provinsi && Boolean(props.errors.provinsi)}
+            disabled={adaPelanggan}
+            helperText={props.touched.provinsi && props.errors.provinsi}
+            variant="outlined"
+            name="provinsi"
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4} lg={4}>
+          <TextField
+            required
+            id="kota_kabupaten"
+            label="Kota / Kabupaten"
+            onBlur={props.handleBlur}
+            onChange={props.handleChange}
+            value={props.values.kota_kabupaten}
+            error={
+              props.touched.kota_kabupaten &&
+              Boolean(props.errors.kota_kabupaten)
+            }
+            disabled={adaPelanggan}
+            helperText={
+              props.touched.kota_kabupaten && props.errors.kota_kabupaten
+            }
+            variant="outlined"
+            name="kota_kabupaten"
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4} lg={4}>
+          <TextField
+            required
+            id="kecamatan"
+            label="Kecamatan"
+            onBlur={props.handleBlur}
+            onChange={props.handleChange}
+            value={props.values.kecamatan}
+            error={props.touched.kecamatan && Boolean(props.errors.kecamatan)}
+            disabled={adaPelanggan}
+            helperText={props.touched.kecamatan && props.errors.kecamatan}
+            variant="outlined"
+            name="kecamatan"
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            required
+            id="alamat"
+            label="Alamat"
+            multiline
+            rows={5}
+            onBlur={props.handleBlur}
+            onChange={props.handleChange}
+            value={props.values.alamat}
+            error={props.touched.alamat && Boolean(props.errors.alamat)}
+            disabled={adaPelanggan}
+            helperText={props.touched.alamat && props.errors.alamat}
+            variant="outlined"
+            name="alamat"
+            fullWidth
           />
         </Grid>
       </Grid>

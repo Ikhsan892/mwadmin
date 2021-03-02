@@ -7,11 +7,11 @@ const initialState = {
   token: '',
   status: 0,
   user: {
-    first_name: 'Fatihul',
-    last_name: 'Ikhsan',
-    email: 'mfatihul8902@gmail.com',
+    first_name: '--',
+    last_name: '--',
+    email: '---',
     avatar: '/images/avatars/profil.jpeg',
-    bio: 'Chief Executive Officer',
+    bio: '---',
     role: 'ADMIN' // ['GUEST', 'USER', 'ADMIN']
   }
 };
@@ -20,7 +20,7 @@ const sessionReducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.SESSION_LOGIN: {
       return {
-        ...initialState,
+        ...state,
         loggedIn: true,
         status: 200,
         token: action.token,
@@ -40,6 +40,7 @@ const sessionReducer = (state = initialState, action) => {
         ...state,
         loggedIn: false,
         token: '',
+        status: 0,
         user: {
           role: 'GUEST'
         }
