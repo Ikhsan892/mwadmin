@@ -62,7 +62,7 @@ const Dashboard = props => {
     } else {
       dispatch(userData());
     }
-  }, [cookies]);
+  }, []);
 
   return (
     <div className={classes.root}>

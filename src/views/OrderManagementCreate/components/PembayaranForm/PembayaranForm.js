@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import {
   Grid,
   Box,
+  Button,
   Card,
   CardContent,
   Typography,
-  Divider
+  Divider,
+  MenuItem,
+  InputLabel,
+  FormControl
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -13,7 +17,7 @@ import client from 'utils/axios';
 import { FieldArray, Field } from 'formik';
 import RemoveIcon from '@material-ui/icons/Remove';
 import AddIcon from '@material-ui/icons/Add';
-import { TextField } from 'formik-material-ui';
+import { TextField, Select } from 'formik-material-ui';
 
 const useStyles = makeStyles(theme => ({
   divider: {
@@ -33,9 +37,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PembayaranForm = () => {
+const PembayaranForm = props => {
   const classes = useStyles();
   const [metode, setMetode] = useState([]);
+  const [statusPembayaran, setStatusPembayaran] = useState([]);
   const [loading, setLoading] = useState(false);
   const defaultProps = {
     m: 1,
@@ -48,10 +53,29 @@ const PembayaranForm = () => {
     }
   };
 
-  useEffect(async () => {
-    setLoading(true);
+  // Get Payment Method
+  const getPembayaranData = async () => {
     let data = await client.get('/api/metode-pembayaran');
     setMetode(data.data);
+  };
+
+  // Get Keterangan Pembayaran
+  const getPaymentStatus = async () => {
+    let data = await client.get('/api/status-pembayaran');
+    setStatusPembayaran(data.data);
+  };
+
+  // Generate Invoice Random Number
+  const generateRandom = () => {
+    let number = Math.floor(Math.random() * 99999) + 10000; // returns a random integer from 1 to 100
+    let mergeString = 'MW' + number;
+    props.setFieldValue('no_invoice', mergeString);
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    getPembayaranData();
+    getPaymentStatus();
     setLoading(false);
   }, []);
 
@@ -74,10 +98,13 @@ const PembayaranForm = () => {
               />
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={6}>
-              <Typography variant="subtitle2">
-                Input Nomor invoice dengan maksimal karakter 6 dan harus ada
-                huruf "MW"
-              </Typography>
+              <Button
+                type="button"
+                color="primary"
+                variant="outlined"
+                onClick={generateRandom}>
+                Generate Number
+              </Button>
             </Grid>
           </Grid>
         </Grid>
@@ -109,6 +136,31 @@ const PembayaranForm = () => {
                   </Grid>
                 ))}
           </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="h3">Keterangan Pembayaran</Typography>
+          <Divider className={classes.divider} />
+        </Grid>
+        <Grid item xs={12} sm={12} md={6} lg={6}>
+          {loading ? (
+            <Skeleton height={35} style={{ width: '100%' }} />
+          ) : (
+            <FormControl variant="outlined" style={{ width: '100%' }}>
+              <InputLabel htmlFor="status_pembayaran">
+                Status Pembayaran
+              </InputLabel>
+              <Field
+                component={Select}
+                name="age"
+                inputProps={{
+                  id: 'status_pembayaran'
+                }}>
+                {statusPembayaran.map(i => (
+                  <MenuItem value={i.id}>{i.nama_status_pembayaran}</MenuItem>
+                ))}
+              </Field>
+            </FormControl>
+          )}
         </Grid>
       </Grid>
     </>

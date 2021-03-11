@@ -118,9 +118,11 @@ export default function FormStepper() {
       })
     ),
     no_invoice: Yup.string()
-      .min(6, 'Minimal 6 Karakter')
-      .max(6, 'Maksimal 6 Karakter')
-      .required('Required'),
+      .required('Required')
+      .matches(
+        /(^MW)[0-9]{5}$/gm,
+        'Invoice harus ada MW dan diikuti dengan nomor 5 digit'
+      ),
     metode_pembayaran: Yup.string().required('Required'),
     dp: Yup.number(),
     jatuh_tempo: Yup.string().required('Required'),
