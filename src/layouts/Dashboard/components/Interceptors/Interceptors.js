@@ -15,7 +15,7 @@ const Interceptors = () => {
   const [messageOpen, setMessageOpen] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
-  const [cookies, removeCookie] = useCookies(['token']);
+  const [cookies, removeCookie] = useCookies(['_TuVbwpW']);
 
   useEffect(() => {
     client.interceptors.response.use(
@@ -25,7 +25,7 @@ const Interceptors = () => {
       err => {
         if (err.response) {
           if (err.response?.status === 401) {
-            removeCookie('token');
+            removeCookie('_TuVbwpW');
             dispatch(logout());
             router.history.push('/auth/login');
           } else if (
@@ -33,7 +33,7 @@ const Interceptors = () => {
             (err.response?.data.message === 'token invalid' ||
               err.response?.data.message === 'jwt expired')
           ) {
-            removeCookie('token');
+            removeCookie('_TuVbwpW');
             dispatch(logout());
             router.history.push('/auth/login');
           } else {

@@ -124,8 +124,9 @@ export default function FormStepper() {
         'Invoice harus ada MW dan diikuti dengan nomor 5 digit'
       ),
     metode_pembayaran: Yup.string().required('Required'),
+    status_pembayaran: Yup.string().required('Required'),
     dp: Yup.number(),
-    jatuh_tempo: Yup.string().required('Required'),
+    jatuh_tempo: Yup.string(),
     diskon: Yup.array().of(
       Yup.object().shape({
         nama_diskon: Yup.string().min(3, 'Kependekan'),
@@ -135,7 +136,7 @@ export default function FormStepper() {
     biaya_tambahan: Yup.array().of(
       Yup.object().shape({
         nama_biaya: Yup.string().required('Required'),
-        total_biaya: Yup.string().required('Required')
+        total_biaya: Yup.number().required('Required')
       })
     ),
     pengiriman: Yup.string().required('Required'),
@@ -191,6 +192,7 @@ export default function FormStepper() {
                 ],
                 no_invoice: '',
                 metode_pembayaran: '',
+                status_pembayaran: '',
                 dp: '',
                 jatuh_tempo: '',
                 diskon: [
@@ -202,7 +204,7 @@ export default function FormStepper() {
                 biaya_tambahan: [
                   {
                     nama_biaya: '',
-                    total_biaya: ''
+                    total_biaya: 0
                   }
                 ],
                 pengiriman: '',
@@ -214,28 +216,39 @@ export default function FormStepper() {
               }}
               noValidate>
               {props => (
-                <Form
-                  onSubmit={props.handleSubmit}
-                  className={classes.instructions}
-                  noValidate>
-                  {getStepContent(activeStep, props)}
-                  <Button variant="contained" color="primary" type="submit">
-                    Test Submit
-                  </Button>
-                </Form>
+                <>
+                  <Form
+                    onSubmit={props.handleSubmit}
+                    className={classes.instructions}
+                    noValidate>
+                    {getStepContent(activeStep, props)}
+                    <div style={{ marginTop: 20 }}>
+                      <Button
+                        disabled={activeStep === 0}
+                        onClick={handleBack}
+                        className={classes.backButton}>
+                        Back
+                      </Button>
+                      {activeStep === steps.length - 1 ? (
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          type="submit">
+                          Submit
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={handleNext}>
+                          Next
+                        </Button>
+                      )}
+                    </div>
+                  </Form>
+                </>
               )}
             </Formik>
-            <div>
-              <Button
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                className={classes.backButton}>
-                Back
-              </Button>
-              <Button variant="contained" color="primary" onClick={handleNext}>
-                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-              </Button>
-            </div>
           </div>
         )}
       </div>
