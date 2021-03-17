@@ -115,6 +115,7 @@ const PembayaranForm = props => {
             <Grid item xs={12} sm={12} md={6} lg={6}>
               <Field
                 component={TextField}
+                disabled={false}
                 variant="outlined"
                 style={{ width: '100%' }}
                 label="Nomor Invoice"
@@ -149,6 +150,7 @@ const PembayaranForm = props => {
                         <Field
                           type="radio"
                           id="metode_pembayaran"
+                          disabled={false}
                           value={i.nama_metode_pembayaran}
                           name="metode_pembayaran"
                         />
@@ -184,6 +186,7 @@ const PembayaranForm = props => {
                     <Field
                       component={Select}
                       name="status_pembayaran"
+                      disabled={false}
                       inputProps={{
                         id: 'status_pembayaran'
                       }}>
@@ -204,6 +207,7 @@ const PembayaranForm = props => {
                       type="number"
                       name="dp"
                       variant="outlined"
+                      disabled={false}
                       style={{
                         width: '100%'
                       }}
@@ -232,6 +236,7 @@ const PembayaranForm = props => {
               <Field
                 component={TextField}
                 name="jatuh_tempo"
+                disabled={false}
                 type="date"
                 variant="outlined"
                 fullwidth
@@ -248,7 +253,10 @@ const PembayaranForm = props => {
                   <Divider className={classes.divider} />
                 </Grid>
                 <Grid item xs={12}>
-                  <Field component={RadioGroup} name="pengiriman">
+                  <Field
+                    component={RadioGroup}
+                    name="pengiriman"
+                    disabled={false}>
                     {loading
                       ? 'Loading...'
                       : kurir.map(i => (
@@ -273,6 +281,7 @@ const PembayaranForm = props => {
                     component={TextField}
                     name="ongkir"
                     type="number"
+                    disabled={false}
                     label="Ongkir"
                     variant="outlined"
                     fullWidth
@@ -316,6 +325,7 @@ const PembayaranForm = props => {
                             component={TextField}
                             name={`biaya_tambahan.${index}.nama_biaya`}
                             label="Nama Biaya"
+                            disabled={false}
                             placeholder="Ex : Biaya Service | Biaya Garansi"
                             variant="outlined"
                             fullWidth
@@ -324,6 +334,7 @@ const PembayaranForm = props => {
                         <Grid item xs={6}>
                           <Field
                             component={TextField}
+                            disabled={false}
                             name={`biaya_tambahan.${index}.total_biaya`}
                             label="Total Biaya"
                             variant="outlined"
@@ -379,6 +390,7 @@ const PembayaranForm = props => {
                           <Grid item xs={6}>
                             <Field
                               component={TextField}
+                              disabled={false}
                               name={`diskon.${index}.nama_diskon`}
                               label="Nama Diskon"
                               placeholder="Ex : MW Ultah"
@@ -389,6 +401,7 @@ const PembayaranForm = props => {
                           <Grid item xs={6}>
                             <Field
                               component={TextField}
+                              disabled={false}
                               name={`diskon.${index}.total_diskon`}
                               label="Total Diskon Terpakai"
                               variant="outlined"

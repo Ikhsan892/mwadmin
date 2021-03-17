@@ -31,6 +31,7 @@ const BarangForm = ({ ...props }) => {
                         <Field
                           component={TextField}
                           style={{ width: '100%' }}
+                          disabled={false}
                           name={`barang.${index}.nama_barang`}
                           type="text"
                           variant="outlined"
@@ -49,6 +50,7 @@ const BarangForm = ({ ...props }) => {
                                         <Field
                                           component={TextField}
                                           style={{ width: '100%' }}
+                                          disabled={false}
                                           name={`barang.${index}.kerusakan.${i}.nama_kerusakan`}
                                           type="text"
                                           variant="outlined"
@@ -71,6 +73,7 @@ const BarangForm = ({ ...props }) => {
                                                       lg={5}>
                                                       <Field
                                                         component={TextField}
+                                                        disabled={false}
                                                         style={{
                                                           width: '100%'
                                                         }}
@@ -88,6 +91,7 @@ const BarangForm = ({ ...props }) => {
                                                       lg={5}>
                                                       <Field
                                                         component={TextField}
+                                                        disabled={false}
                                                         style={{
                                                           width: '100%'
                                                         }}

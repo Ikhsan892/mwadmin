@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import CustomerForm from '../CustomerForm';
 import BarangForm from '../BarangForm';
 import PembayaranForm from '../PembayaranForm';
+import ModalConfirmation from '../ModalConfirmation';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -48,6 +49,8 @@ function getStepContent(stepIndex, formikProps) {
 export default function FormStepper() {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
+  const [formData, setFormData] = React.useState([]);
+  const [openModal, setOpenModal] = React.useState(false);
   const steps = getSteps();
 
   const handleNext = () => {
@@ -60,6 +63,12 @@ export default function FormStepper() {
 
   const handleReset = () => {
     setActiveStep(0);
+  };
+
+  // handle Modal Open
+  const handleSubmit = (isOpen, data) => {
+    setFormData(data);
+    setOpenModal(isOpen);
   };
 
   const OrderSchema = Yup.object().shape({
@@ -144,114 +153,119 @@ export default function FormStepper() {
   });
 
   return (
-    <div className={classes.root}>
-      <Stepper activeStep={activeStep} alternativeLabel>
-        {steps.map(label => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-      <div>
-        {activeStep === steps.length ? (
-          <div>
-            <Typography className={classes.instructions}>
-              All steps completed
-            </Typography>
-            <Button onClick={handleReset}>Reset</Button>
-          </div>
-        ) : (
-          <div>
-            <Formik
-              initialValues={{
-                nama_depan: '',
-                nama_belakang: '',
-                email: '',
-                no_telepon: '',
-                negara: '',
-                umur: '',
-                provinsi: '',
-                kota_kabupaten: '',
-                kecamatan: '',
-                alamat: '',
-                barang: [
-                  {
-                    nama_barang: '',
-                    kerusakan: [
-                      {
-                        nama_kerusakan: '',
-                        sparepart: [
-                          {
-                            nama_sparepart: '',
-                            harga: ''
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ],
-                no_invoice: '',
-                metode_pembayaran: '',
-                status_pembayaran: '',
-                dp: '',
-                jatuh_tempo: '',
-                diskon: [
-                  {
-                    nama_diskon: '',
-                    total_diskon: ''
-                  }
-                ],
-                biaya_tambahan: [
-                  {
-                    nama_biaya: '',
-                    total_biaya: 0
-                  }
-                ],
-                pengiriman: '',
-                ongkir: ''
-              }}
-              validationSchema={OrderSchema}
-              onSubmit={values => {
-                alert(JSON.stringify(values, null, 2));
-              }}
-              noValidate>
-              {props => (
-                <>
-                  <Form
-                    onSubmit={props.handleSubmit}
-                    className={classes.instructions}
-                    noValidate>
-                    {getStepContent(activeStep, props)}
-                    <div style={{ marginTop: 20 }}>
-                      <Button
-                        disabled={activeStep === 0}
-                        onClick={handleBack}
-                        className={classes.backButton}>
-                        Back
-                      </Button>
-                      {activeStep === steps.length - 1 ? (
+    <>
+      <ModalConfirmation
+        data={formData}
+        open={openModal}
+        handleClose={() => handleSubmit(false, [])}
+      />
+      <div className={classes.root}>
+        <Stepper activeStep={activeStep} alternativeLabel>
+          {steps.map(label => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        <div>
+          {activeStep === steps.length ? (
+            <div>
+              <Typography className={classes.instructions}>
+                All steps completed
+              </Typography>
+              <Button onClick={handleReset}>Reset</Button>
+            </div>
+          ) : (
+            <div>
+              <Formik
+                initialValues={{
+                  nama_depan: '',
+                  nama_belakang: '',
+                  email: '',
+                  no_telepon: '',
+                  negara: '',
+                  umur: '',
+                  provinsi: '',
+                  kota_kabupaten: '',
+                  kecamatan: '',
+                  alamat: '',
+                  barang: [
+                    {
+                      nama_barang: '',
+                      kerusakan: [
+                        {
+                          nama_kerusakan: '',
+                          sparepart: [
+                            {
+                              nama_sparepart: '',
+                              harga: ''
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  no_invoice: '',
+                  metode_pembayaran: '',
+                  status_pembayaran: '',
+                  dp: '',
+                  jatuh_tempo: '',
+                  diskon: [
+                    {
+                      nama_diskon: '',
+                      total_diskon: ''
+                    }
+                  ],
+                  biaya_tambahan: [
+                    {
+                      nama_biaya: '',
+                      total_biaya: 0
+                    }
+                  ],
+                  pengiriman: '',
+                  ongkir: ''
+                }}
+                validationSchema={OrderSchema}
+                onSubmit={values => handleSubmit(true, values)}
+                noValidate>
+                {props => (
+                  <>
+                    <Form
+                      onSubmit={props.handleSubmit}
+                      className={classes.instructions}
+                      noValidate>
+                      {getStepContent(activeStep, props)}
+                      <div style={{ marginTop: 20 }}>
                         <Button
-                          variant="contained"
-                          color="primary"
-                          type="submit">
-                          Submit
+                          disabled={activeStep === 0}
+                          onClick={handleBack}
+                          className={classes.backButton}>
+                          Back
                         </Button>
-                      ) : (
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={handleNext}>
-                          Next
-                        </Button>
-                      )}
-                    </div>
-                  </Form>
-                </>
-              )}
-            </Formik>
-          </div>
-        )}
+                        {activeStep === steps.length - 1 ? (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            type="submit">
+                            Submit
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleNext}>
+                            Next
+                          </Button>
+                        )}
+                      </div>
+                    </Form>
+                  </>
+                )}
+              </Formik>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
