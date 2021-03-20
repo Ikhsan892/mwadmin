@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
 
 const NavBar = props => {
   const { openMobile, onMobileClose, className, ...rest } = props;
-  const [cookies, removeCookie, setCookies] = useCookies(['token']);
+  const [cookies, removeCookie, setCookies] = useCookies(['_TuVbwpW']);
   const classes = useStyles();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -68,7 +68,7 @@ const NavBar = props => {
 
   const handleLogout = () => {
     dispatch(logout());
-    removeCookie('token');
+    removeCookie('_TuVbwpW');
     router.history.push('/auth/login');
   };
 

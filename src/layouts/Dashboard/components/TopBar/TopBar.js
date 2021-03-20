@@ -70,7 +70,7 @@ const TopBar = props => {
   const [notifications, setNotifications] = useState([]);
   const [openNotifications, setOpenNotifications] = useState(false);
   const { isMaintain } = useSelector(state => state.maintained);
-  const [ cookies, setCookies ,removeCookie ] = useCookies(['token'])
+  const [ cookies, setCookies ,removeCookie ] = useCookies(['_TuVbwpW'])
 
   useEffect(() => {
     let mounted = true;
@@ -92,7 +92,7 @@ const TopBar = props => {
 
   const handleLogout = () => {
     dispatch(logout());
-    removeCookie('token')
+    removeCookie('_TuVbwpW')
     history.push('/auth/login');
   };
 

@@ -54,10 +54,12 @@ export const userData = () => {
       type: SESSION_REQUEST_LOGIN_TRUE
     });
     let res = await client.get('/api/user/detail');
-    dispatch({
-      type: SESSION_LOGIN,
-      data: res.data.user
-    });
+    if(res && res.data && res.data.user){
+      dispatch({
+        type: SESSION_LOGIN,
+        data: res.data.user
+      });
+    }
     dispatch({
       type: SESSION_REQUEST_LOGIN_FALSE
     });

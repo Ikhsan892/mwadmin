@@ -16,7 +16,7 @@ const AuthGuard = props => {
   const [cookies] = useCookies(['token']);
 
   useEffect(() => {
-    if (!cookies.token || cookies.token === undefined) {
+    if (!cookies._TuVbwpW || cookies._TuVbwpW === undefined) {
       router.history.push('/auth/login');
     }
     // if (!session.loggedIn || !session.user) {

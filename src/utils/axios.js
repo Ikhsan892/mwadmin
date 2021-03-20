@@ -16,6 +16,7 @@ function getCookie(cname) {
   return "";
 }
 
+
 const client = axios.create({
   baseURL: 'http://localhost:8000',
   timeout: 100000
@@ -26,8 +27,7 @@ client.defaults.headers.common['Content-Type'] = `Application/json`;
 
 client.interceptors.request.use(
     function(config) {
-      config.headers['Authorization'] = `Bearer ${getCookie('token').replace('%7C', '|')}`
-
+      config.headers['Authorization'] = `Bearer ${getCookie('_TuVbwpW').replace('%7C', '|')}`
       return config;
     },
     function(error) {

@@ -45,7 +45,7 @@ const Dashboard = props => {
   const dispatch = useDispatch();
   const classes = useStyles();
   const { isMaintain } = useSelector(state => state.maintained);
-  const [cookies, setCookies, removeCookie] = useCookies(['token']);
+  const [cookies, setCookies, removeCookie] = useCookies(['_TuVbwpW']);
   const [openNavBarMobile, setOpenNavBarMobile] = useState(false);
   const router = useRouter();
   const handleNavBarMobileOpen = () => {
@@ -57,7 +57,7 @@ const Dashboard = props => {
   };
 
   useEffect(() => {
-    if (cookies.token === 'undefined' || !cookies.token) {
+    if (cookies._TuVbwpW === 'undefined' || !cookies._TuVbwpW) {
       router.history.push('/auth/login');
     } else {
       dispatch(userData());
