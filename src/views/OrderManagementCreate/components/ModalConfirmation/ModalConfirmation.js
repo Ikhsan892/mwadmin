@@ -18,7 +18,7 @@ export default function ModalConfirmation({ data, open, handleClose }) {
   return (
     <div>
       <Dialog
-        open={true}
+        open={open}
         onClose={handleClose}
         scroll="paper"
         maxWidth="sm"

@@ -46,6 +46,7 @@
     "chart.js": "^2.7.3",
     "clsx": "^1.0.4",
     "draft-js": "^0.11.0",
+    "draft-js-export-html": "^1.4.1",
     "formik": "^2.2.6",
     "formik-material-ui": "^3.0.1",
     "formik-material-ui-lab": "0.0.8",

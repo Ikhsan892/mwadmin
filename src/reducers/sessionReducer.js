@@ -25,8 +25,8 @@ const sessionReducer = (state = initialState, action) => {
         status: 200,
         token: action.token,
         user: {
-          first_name: action.data.firstName,
-          last_name: action.data.lastName,
+          first_name: action.data.name,
+          last_name: '--',
           email: action.data.email,
           avatar: action.data.profile_image,
           bio: action.data.jabatan ? action.data.jabatan : '-',
