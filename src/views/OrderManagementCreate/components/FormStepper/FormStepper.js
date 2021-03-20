@@ -139,7 +139,8 @@ export default function FormStepper() {
       })
     ),
     pengiriman: Yup.string().required('Required'),
-    ongkir: Yup.number().required('Required')
+    ongkir: Yup.number().required('Required'),
+    note : Yup.string(),
   });
 
   return (
@@ -206,7 +207,8 @@ export default function FormStepper() {
                   }
                 ],
                 pengiriman: '',
-                ongkir: ''
+                ongkir: '',
+                note : ''
               }}
               validationSchema={OrderSchema}
               onSubmit={values => {
