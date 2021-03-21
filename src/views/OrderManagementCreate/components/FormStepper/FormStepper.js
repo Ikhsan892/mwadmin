@@ -11,6 +11,7 @@ import CustomerForm from '../CustomerForm';
 import BarangForm from '../BarangForm';
 import PembayaranForm from '../PembayaranForm';
 import ModalConfirmation from '../ModalConfirmation';
+import client from 'utils/axios';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -66,10 +67,13 @@ export default function FormStepper() {
   };
 
   // handle Modal Open
-  const handleSubmit = (isOpen, data) => {
+  const handleSubmit = async (isOpen, data) => {
     // setFormData(data);
     // setOpenModal(isOpen);
-    console.log(data);
+    let response = await client.post('/api/invoice', data);
+    if (response.status === 201) {
+      alert(response.data.message);
+    }
   };
 
   const OrderSchema = Yup.object().shape({
@@ -150,8 +154,8 @@ export default function FormStepper() {
       })
     ),
     pengiriman: Yup.string().required('Required'),
-    ongkir: Yup.number().required('Required'),
-    note: Yup.string()
+    garansi: Yup.string(),
+    ongkir: Yup.number().required('Required')
   });
 
   return (
@@ -226,6 +230,7 @@ export default function FormStepper() {
                   ],
                   pengiriman: '',
                   ongkir: '',
+                  garansi: '',
                   note: ''
                 }}
                 validationSchema={OrderSchema}

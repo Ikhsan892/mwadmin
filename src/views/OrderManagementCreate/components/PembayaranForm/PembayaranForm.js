@@ -436,11 +436,26 @@ const PembayaranForm = props => {
           )}
         </Grid>
         <Grid item xs={12}>
+          <Typography variant="h3">Garansi</Typography>
+          <Divider className={classes.divider} />
+        </Grid>
+        <Grid item xs={12}>
+          <Field
+            component={TextField}
+            name="garansi"
+            type="text"
+            disabled={false}
+            label="Garansi"
+            variant="outlined"
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
           <Typography variant="h3">Note</Typography>
           <Divider className={classes.divider} />
         </Grid>
         <Grid item xs={12}>
-          <RichEditor />
+          <RichEditor formik={props} />
         </Grid>
       </Grid>
     </>

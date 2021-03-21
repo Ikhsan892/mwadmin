@@ -10,7 +10,7 @@ import {
 } from 'draft-js';
 import { makeStyles } from '@material-ui/styles';
 import { Paper, Divider } from '@material-ui/core';
-
+import { stateToHTML } from 'draft-js-export-html';
 import { EditorToolbar } from './components';
 import { blockRenderMap } from './utils';
 
@@ -122,6 +122,8 @@ const RichEditor = props => {
 
   const handleEditorChange = editorState => {
     setEditorState(editorState);
+    let data = stateToHTML(editorState.getCurrentContent());
+    props.formik.setFieldValue('note', data);
   };
 
   const handleKeyCommand = (command, editorState) => {
