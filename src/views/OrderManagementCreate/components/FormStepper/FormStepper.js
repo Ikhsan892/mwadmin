@@ -67,8 +67,9 @@ export default function FormStepper() {
 
   // handle Modal Open
   const handleSubmit = (isOpen, data) => {
-    setFormData(data);
-    setOpenModal(isOpen);
+    // setFormData(data);
+    // setOpenModal(isOpen);
+    console.log(data);
   };
 
   const OrderSchema = Yup.object().shape({
@@ -149,7 +150,8 @@ export default function FormStepper() {
       })
     ),
     pengiriman: Yup.string().required('Required'),
-    ongkir: Yup.number().required('Required')
+    ongkir: Yup.number().required('Required'),
+    note: Yup.string()
   });
 
   return (
@@ -223,7 +225,8 @@ export default function FormStepper() {
                     }
                   ],
                   pengiriman: '',
-                  ongkir: ''
+                  ongkir: '',
+                  note: ''
                 }}
                 validationSchema={OrderSchema}
                 onSubmit={values => handleSubmit(true, values)}

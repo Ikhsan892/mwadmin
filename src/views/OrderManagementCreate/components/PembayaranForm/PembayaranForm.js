@@ -21,6 +21,7 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import AddIcon from '@material-ui/icons/Add';
 import useRouter from 'utils/useRouter';
 import { TextField, Select, RadioGroup } from 'formik-material-ui';
+import { RichEditor } from 'components';
 
 const useStyles = makeStyles(theme => ({
   divider: {
@@ -433,6 +434,13 @@ const PembayaranForm = props => {
           ) : (
             ''
           )}
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="h3">Note</Typography>
+          <Divider className={classes.divider} />
+        </Grid>
+        <Grid item xs={12}>
+          <RichEditor />
         </Grid>
       </Grid>
     </>

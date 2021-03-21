@@ -162,19 +162,10 @@ const RichEditor = props => {
   }
 
   return (
-    <Paper
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
-      <EditorToolbar
-        editorState={editorState}
-        onToggle={handleToolbarToggle}
-      />
+    <Paper {...rest} className={clsx(classes.root, className)}>
+      <EditorToolbar editorState={editorState} onToggle={handleToolbarToggle} />
       <Divider />
-      <div
-        className={classes.editorContainer}
-        onClick={handleContainerClick}
-      >
+      <div className={classes.editorContainer} onClick={handleContainerClick}>
         <Editor
           blockRenderMap={blockRenderMap}
           blockStyleFn={blockStyleFn}
