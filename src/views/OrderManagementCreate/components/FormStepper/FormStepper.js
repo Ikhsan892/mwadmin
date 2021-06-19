@@ -73,6 +73,7 @@ export default function FormStepper() {
     let response = await client.post('/api/invoice', data);
     if (response.status === 201) {
       alert(response.data.message);
+      // Jika response berhasil
     }
   };
 
