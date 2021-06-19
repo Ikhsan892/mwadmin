@@ -1,7 +1,8 @@
 import * as actionTypes from 'actions';
 
 const initialState = {
-  pelanggan_inserted: false
+  pelanggan_inserted: false,
+  payment_inserted: false
 };
 
 const triggerReducer = (state = initialState, action) => {
@@ -10,6 +11,13 @@ const triggerReducer = (state = initialState, action) => {
       return {
         ...state,
         pelanggan_inserted: !state.pelanggan_inserted
+      };
+    }
+
+    case actionTypes.PAYMENT_INSERTED: {
+      return {
+        ...state,
+        payment_inserted: !state.payment_inserted
       };
     }
     default: {

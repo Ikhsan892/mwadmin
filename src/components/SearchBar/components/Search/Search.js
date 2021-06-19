@@ -49,6 +49,7 @@ const Search = props => {
         <Button
           className={classes.searchButton}
           size="large"
+          type="submit"
           variant="contained">
           Cari
         </Button>
