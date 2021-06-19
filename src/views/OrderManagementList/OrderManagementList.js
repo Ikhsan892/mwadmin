@@ -18,22 +18,13 @@ const OrderManagementList = () => {
   const classes = useStyles();
   const [orders, setOrders] = useState([]);
 
+  const handleFetchOrder = async () => {
+    let response = await axios.get('/api/invoice/admin');
+    setOrders(response.data.resi);
+  };
+
   useEffect(() => {
-    let mounted = true;
-
-    const fetchOrders = () => {
-      axios.get('/api/orders').then(response => {
-        if (mounted) {
-          setOrders(response.data.orders);
-        }
-      });
-    };
-
-    fetchOrders();
-
-    return () => {
-      mounted = false;
-    };
+    handleFetchOrder();
   }, []);
 
   return (

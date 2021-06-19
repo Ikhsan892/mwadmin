@@ -23,4 +23,5 @@ export { default as StackAvatars } from './StackAvatars';
 export { default as StatusBullet } from './StatusBullet';
 export { default as TableEditBar } from './TableEditBar';
 export { default as RadioButton } from './RadioButton';
-export { default as NegaraField } from './NegaraField'
+export { default as NegaraField } from './NegaraField';
+export { DialogTitle, DialogContent, DialogActions } from './ModalSubComponent';

@@ -31,27 +31,29 @@ const useStyles = makeStyles(theme => ({
 
 const Search = props => {
   const { onSearch, className, ...rest } = props;
-
+  const [input, setInput] = React.useState('');
   const classes = useStyles();
 
   return (
-    <div {...rest} className={clsx(classes.root, className)}>
-      <Paper className={classes.search} elevation={1}>
-        <SearchIcon className={classes.searchIcon} />
-        <Input
-          className={classes.searchInput}
-          disableUnderline
-          placeholder="Cari Data"
-        />
-      </Paper>
-      <Button
-        className={classes.searchButton}
-        onClick={onSearch}
-        size="large"
-        variant="contained">
-        Cari
-      </Button>
-    </div>
+    <form onSubmit={evt => onSearch(evt, input)}>
+      <div {...rest} className={clsx(classes.root, className)}>
+        <Paper className={classes.search} elevation={1}>
+          <SearchIcon className={classes.searchIcon} />
+          <Input
+            className={classes.searchInput}
+            onChange={evt => setInput(evt.target.value)}
+            disableUnderline
+            placeholder="Cari Data"
+          />
+        </Paper>
+        <Button
+          className={classes.searchButton}
+          size="large"
+          variant="contained">
+          Cari
+        </Button>
+      </div>
+    </form>
   );
 };
 

@@ -371,6 +371,7 @@ const PembayaranForm = props => {
             <span>
               <Switch
                 checked={pakeDiskon}
+                disabled
                 onChange={() => setPakeDiskon(!pakeDiskon)}
                 color="primary"
               />

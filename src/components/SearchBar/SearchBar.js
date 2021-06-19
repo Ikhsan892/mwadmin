@@ -55,7 +55,7 @@ const SearchBar = props => {
         ''
       ) : (
         <>
-          <Grid item>
+          {/* <Grid item>
             <Button
               className={classes.filterButton}
               color="primary"
@@ -64,7 +64,7 @@ const SearchBar = props => {
               variant="outlined">
               <FilterListIcon className={classes.filterIcon} /> Filter Data
             </Button>
-          </Grid>
+          </Grid> */}
           <Filter
             onClose={handleFilterClose}
             onFilter={onFilter}

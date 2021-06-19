@@ -68,33 +68,15 @@ const CustomerEdit = props => {
   };
 
   return (
-    <Modal
-      onClose={onClose}
-      open={open}
-    >
-      <Card
-        {...rest}
-        className={clsx(classes.root, className)}
-      >
+    <Modal onClose={onClose} open={open}>
+      <Card {...rest} className={clsx(classes.root, className)}>
         <form>
           <CardContent>
-            <Typography
-              align="center"
-              gutterBottom
-              variant="h3"
-            >
+            <Typography align="center" gutterBottom variant="h3">
               Edit Pelanggan
             </Typography>
-            <Grid
-              className={classes.container}
-              container
-              spacing={3}
-            >
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
+            <Grid className={classes.container} container spacing={3}>
+              <Grid item md={6} xs={12}>
                 <TextField
                   fullWidth
                   label="Alamat Email"
@@ -104,11 +86,7 @@ const CustomerEdit = props => {
                   variant="outlined"
                 />
               </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
+              <Grid item md={6} xs={12}>
                 <TextField
                   fullWidth
                   label="Nama Lengkap"
@@ -118,67 +96,47 @@ const CustomerEdit = props => {
                   variant="outlined"
                 />
               </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
+              <Grid item md={6} xs={12}>
                 <TextField
                   fullWidth
                   label="Nomor Telepon"
-                  name="phone"
+                  name="no_telepon"
                   onChange={handleFieldChange}
-                  value={formState.phone}
+                  value={formState.no_telepon}
                   variant="outlined"
                 />
               </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
+              <Grid item md={6} xs={12}>
                 <TextField
                   fullWidth
                   label="Provinsi"
-                  name="state"
+                  name="provinsi"
                   onChange={handleFieldChange}
-                  value={formState.state}
+                  value={formState.provinsi}
                   variant="outlined"
                 />
               </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
+              <Grid item md={6} xs={12}>
                 <TextField
                   fullWidth
                   label="Negara"
-                  name="country"
+                  name="negara"
                   onChange={handleFieldChange}
-                  value={formState.country}
+                  value={formState.negara}
                   variant="outlined"
                 />
               </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
+              <Grid item md={6} xs={12}>
                 <TextField
                   fullWidth
                   label="Alamat"
-                  name="address1"
+                  name="alamat"
                   onChange={handleFieldChange}
-                  value={formState.address1}
+                  value={formState.alamat}
                   variant="outlined"
                 />
               </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
+              <Grid item md={6} xs={12}>
                 <TextField
                   fullWidth
                   label="Kecamatan"
@@ -188,11 +146,7 @@ const CustomerEdit = props => {
                   variant="outlined"
                 />
               </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
+              <Grid item md={6} xs={12}>
                 <TextField
                   fullWidth
                   label="Kota / Kabupaten"
@@ -203,15 +157,9 @@ const CustomerEdit = props => {
                 />
               </Grid>
               <Grid item />
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
+              <Grid item md={6} xs={12}>
                 <Typography variant="h5">Email Terverifikasi</Typography>
-                <Typography variant="body2">
-                  Verifikasi Email
-                </Typography>
+                <Typography variant="body2">Verifikasi Email</Typography>
                 <Switch
                   checked={formState.verified}
                   color="secondary"
@@ -224,17 +172,13 @@ const CustomerEdit = props => {
             </Grid>
           </CardContent>
           <CardActions className={classes.actions}>
-            <Button
-              onClick={onClose}
-              variant="contained"
-            >
+            <Button onClick={onClose} variant="contained">
               Tutup
             </Button>
             <Button
               className={classes.saveButton}
               onClick={onClose}
-              variant="contained"
-            >
+              variant="contained">
               Simpan
             </Button>
           </CardActions>

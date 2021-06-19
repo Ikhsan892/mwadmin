@@ -17,7 +17,8 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  colors
+  colors,
+  LinearProgress
 } from '@material-ui/core';
 
 import axios from 'utils/axios';
@@ -38,18 +39,21 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Invoices = props => {
-  const { className, ...rest } = props;
+  const { className, id, ...rest } = props;
 
   const classes = useStyles();
   const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
 
     const fetchInvoices = () => {
-      axios.get('/api/management/customers/1/invoices').then(response => {
+      setLoading(true);
+      axios.get(`/api/pelanggan/${id}`).then(response => {
         if (mounted) {
-          setInvoices(response.data.invoices);
+          setLoading(false);
+          setInvoices(response.data.invoice);
         }
       });
     };
@@ -74,71 +78,76 @@ const Invoices = props => {
         <CardHeader action={<GenericMoreButton />} title="Invoice Pelanggan" />
         <Divider />
         <CardContent className={classes.content}>
-          <PerfectScrollbar>
-            <div className={classes.inner}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>No Invoice</TableCell>
-                    <TableCell>Tanggal</TableCell>
-                    <TableCell>Barang</TableCell>
-                    <TableCell>Metode Pembayaran</TableCell>
-                    <TableCell>Total</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell align="right">Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {invoices.map(invoice => (
-                    <TableRow key={invoice.id}>
-                      <TableCell>{invoice.no_invoice}</TableCell>
-                      <TableCell>
-                        {moment(invoice.date).format('DD/MM/YYYY | HH:MM')}
-                      </TableCell>
-                      <TableCell>
-                        {console.log(invoice.barang.length)}
-                        {invoice.barang.length < 2
-                          ? invoice.barang[0]
-                          : `${invoice.barang.length} Barang`}
-                      </TableCell>
-                      <TableCell>
-                        {invoice.paymentMethod}
-                        {'--'}
-                        <span>
-                          <img
-                            src={invoice.paymentImage}
-                            className={classes.payment_image}
-                          />
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        {rupiahFormat
-                          .convert(invoice.value)
-                          .replace(',00', ',-')}
-                      </TableCell>
-                      <TableCell>
-                        <Label
-                          color={statusColors[invoice.status]}
-                          variant="outlined">
-                          {invoice.status}
-                        </Label>
-                      </TableCell>
-                      <TableCell align="right">
-                        <Button
-                          color="primary"
-                          component={RouterLink}
-                          size="small"
-                          to={'/invoices/1'}
-                          variant="outlined">
-                          Detail
-                        </Button>
-                      </TableCell>
+          {loading ? (
+            <LinearProgress />
+          ) : (
+            <PerfectScrollbar>
+              <div className={classes.inner}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>No Invoice</TableCell>
+                      <TableCell>Tanggal</TableCell>
+                      <TableCell>Barang</TableCell>
+                      <TableCell>Metode Pembayaran</TableCell>
+                      <TableCell>Total</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell align="right">Actions</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </PerfectScrollbar>
+                  </TableHead>
+                  <TableBody>
+                    {invoices &&
+                      invoices.map(invoice => (
+                        <TableRow key={invoice.id}>
+                          <TableCell>{invoice.no_invoice}</TableCell>
+                          <TableCell>
+                            {moment(invoice.date).format('DD/MM/YYYY | HH:MM')}
+                          </TableCell>
+                          <TableCell>
+                            {console.log(invoice.barang.length)}
+                            {invoice.barang.length < 2
+                              ? invoice.barang[0]
+                              : `${invoice.barang.length} Barang`}
+                          </TableCell>
+                          <TableCell>
+                            {invoice.paymentMethod}
+                            {'--'}
+                            <span>
+                              <img
+                                src={invoice.paymentImage}
+                                className={classes.payment_image}
+                              />
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            {rupiahFormat
+                              .convert(invoice.value)
+                              .replace(',00', ',-')}
+                          </TableCell>
+                          <TableCell>
+                            <Label
+                              color={statusColors[invoice.status]}
+                              variant="outlined">
+                              {invoice.status}
+                            </Label>
+                          </TableCell>
+                          <TableCell align="right">
+                            <Button
+                              color="primary"
+                              component={RouterLink}
+                              size="small"
+                              to={'/invoices/1'}
+                              variant="outlined">
+                              Detail
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </PerfectScrollbar>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -299,6 +299,11 @@ const routes = [
         component: lazy(() => import('views/OrderManagementDetails'))
       },
       {
+        path: '/barang/new-request',
+        exact: true,
+        component: lazy(() => import('views/NewRequests'))
+      },
+      {
         path: '/pengaturan/pembayaran',
         exact: true,
         component: lazy(() => import('views/Pembayaran'))

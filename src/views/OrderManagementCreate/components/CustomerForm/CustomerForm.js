@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, TextField, Switch, FormControlLabel } from '@material-ui/core';
-import { NegaraField } from 'components';
+import {
+  Grid,
+  TextField,
+  Switch,
+  FormControlLabel,
+  FormControl,
+  Select,
+  InputLabel,
+  FormHelperText
+} from '@material-ui/core';
 import AutoComplete from './AutoComplete';
 import client from 'utils/axios';
 
-const CustomerForm = ({ ...props }) => {
+const CustomerForm = ({ autocomplete, ...props }) => {
   const [adaPelanggan, setAdaPelanggan] = useState(false);
   const [customers, setCustomers] = useState([]);
 
@@ -18,8 +26,11 @@ const CustomerForm = ({ ...props }) => {
       props.setFieldValue('email', newEvent.email);
       props.setFieldValue('no_telepon', newEvent.no_telepon);
       props.setFieldValue('negara', newEvent.negara);
-
-      console.log(newEvent);
+      props.setFieldValue('umur', newEvent.umur);
+      props.setFieldValue('provinsi', newEvent.provinsi);
+      props.setFieldValue('kota_kabupaten', newEvent.kota_kabupaten);
+      props.setFieldValue('kecamatan', newEvent.kecamatan);
+      props.setFieldValue('alamat', newEvent.alamat);
       return;
     } else {
       return;
@@ -39,30 +50,36 @@ const CustomerForm = ({ ...props }) => {
   return (
     <>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} md={6} lg={6}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={adaPelanggan}
-                onChange={handleChange}
-                name="dropdownPelanggan"
-                color="primary"
+        {autocomplete ? (
+          <>
+            <Grid item xs={12} sm={6} md={6} lg={6}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={adaPelanggan}
+                    onChange={handleChange}
+                    name="dropdownPelanggan"
+                    color="primary"
+                  />
+                }
+                label="Pilih Pelanggan yang Sudah Ada"
               />
-            }
-            label="Pilih Pelanggan yang Sudah Ada"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={6} lg={6}>
-          {adaPelanggan ? (
-            <AutoComplete
-              label="Pelanggan"
-              options={customers}
-              onChange={handleSelected}
-            />
-          ) : (
-            ''
-          )}
-        </Grid>
+            </Grid>
+            <Grid item xs={12} sm={6} md={6} lg={6}>
+              {adaPelanggan ? (
+                <AutoComplete
+                  label="Pelanggan"
+                  options={customers}
+                  onChange={handleSelected}
+                />
+              ) : (
+                ''
+              )}
+            </Grid>
+          </>
+        ) : (
+          ''
+        )}
         <Grid item xs={12} sm={6} md={6} lg={6}>
           <TextField
             required
@@ -163,6 +180,35 @@ const CustomerForm = ({ ...props }) => {
             fullWidth
           />
         </Grid>
+        <Grid item xs={12} sm={6} md={6} lg={6}>
+          <FormControl
+            variant="outlined"
+            style={{ width: '100%' }}
+            error={props.touched.gender && Boolean(props.errors.gender)}>
+            <InputLabel htmlFor="outlined-age-native-simple">Gender</InputLabel>
+            <Select
+              native
+              value={props.values.gender}
+              onChange={props.handleChange}
+              label="Gender"
+              error={props.touched.gender && Boolean(props.errors.gender)}
+              fullWidth
+              onBlur={props.handleBlur}
+              name="gender"
+              inputProps={{
+                name: 'gender',
+                id: 'outlined-age-native-simple'
+              }}>
+              <option aria-label="None" value="" />
+              <option value="pria">Pria</option>
+              <option value="wanita">Wanita</option>
+            </Select>
+            <FormHelperText>
+              {props.touched.gender && props.errors.gender}
+            </FormHelperText>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={6} lg={6} />
         <Grid item xs={12} sm={6} md={4} lg={4}>
           <TextField
             required

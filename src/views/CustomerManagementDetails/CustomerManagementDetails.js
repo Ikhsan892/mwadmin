@@ -24,6 +24,7 @@ const useStyles = makeStyles(theme => ({
 
 const CustomerManagementDetails = props => {
   const { match, history } = props;
+  const [name, setName] = React.useState('');
   const classes = useStyles();
   const { id, tab } = match.params;
 
@@ -47,7 +48,7 @@ const CustomerManagementDetails = props => {
 
   return (
     <Page className={classes.root} title="Detail Pelanggan">
-      <Header />
+      <Header name={name} />
       <Tabs
         className={classes.tabs}
         onChange={handleTabsChange}
@@ -60,8 +61,8 @@ const CustomerManagementDetails = props => {
       </Tabs>
       <Divider className={classes.divider} />
       <div className={classes.content}>
-        {tab === 'ringkasan' && <Summary />}
-        {tab === 'invoices' && <Invoices />}
+        {tab === 'ringkasan' && <Summary id={id} setName={setName} />}
+        {tab === 'invoices' && <Invoices id={id} />}
         {/* {tab === 'riwayat' && <Logs />} */}
       </div>
     </Page>

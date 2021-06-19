@@ -38,11 +38,7 @@ const SendEmails = props => {
 
   const classes = useStyles();
 
-  const options = [
-    'Resend last invoice',
-    'Send password reset',
-    'Send verification'
-  ];
+  const options = ['Resend last invoice', 'Send Invoice'];
 
   const [option, setOption] = useState(options[0]);
 
@@ -53,10 +49,7 @@ const SendEmails = props => {
   };
 
   return (
-    <Card
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <Card {...rest} className={clsx(classes.root, className)}>
       <CardHeader title="Send emails" />
       <Divider />
       <CardContent className={classes.content}>
@@ -68,27 +61,20 @@ const SendEmails = props => {
           // eslint-disable-next-line react/jsx-sort-props
           SelectProps={{ native: true }}
           value={option}
-          variant="outlined"
-        >
+          variant="outlined">
           {options.map(option => (
-            <option
-              key={option}
-              value={option}
-            >
+            <option key={option} value={option}>
               {option}
             </option>
           ))}
         </TextField>
-        <Button
-          className={classes.sendButton}
-          variant="contained"
-        >
+        <Button className={classes.sendButton} variant="contained">
           <MaiIcon className={classes.mailIcon} />
           Send email
         </Button>
         <Table className={classes.table}>
           <TableBody>
-            {customer.emails.map(email => (
+            {/* {customer.emails.map(email => (
               <TableRow key={email.id}>
                 <TableCell className={classes.cell}>
                   {moment(email.created_at).format('DD/MM/YYYY | HH:MM')}
@@ -97,7 +83,7 @@ const SendEmails = props => {
                   {email.description}
                 </TableCell>
               </TableRow>
-            ))}
+            ))} */}
           </TableBody>
         </Table>
       </CardContent>
