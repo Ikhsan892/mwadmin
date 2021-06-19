@@ -7,9 +7,11 @@ import Button from '@material-ui/core/Button';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import Typography from '@material-ui/core/Typography';
+import useRouter from 'utils/useRouter';
 import CustomerForm from '../CustomerForm';
 import BarangForm from '../BarangForm';
 import PembayaranForm from '../PembayaranForm';
+import Snackbar from '@material-ui/core/Snackbar';
 import ModalConfirmation from '../ModalConfirmation';
 import client from 'utils/axios';
 
@@ -52,7 +54,9 @@ export default function FormStepper() {
   const [activeStep, setActiveStep] = React.useState(0);
   const [formData, setFormData] = React.useState([]);
   const [openModal, setOpenModal] = React.useState(false);
+  const [openToast, setOpenToast] = React.useState(false);
   const steps = getSteps();
+  const router = useRouter();
 
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
@@ -72,7 +76,10 @@ export default function FormStepper() {
     // setOpenModal(isOpen);
     let response = await client.post('/api/invoice', data);
     if (response.status === 201) {
-      alert(response.data.message);
+      setOpenToast(true);
+      setTimeout(() => {
+        router.history.push('/management/orders');
+      }, 3000);
     }
   };
 
@@ -160,6 +167,13 @@ export default function FormStepper() {
 
   return (
     <>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={openToast}
+        onClose={() => setOpenToast(false)}
+        message="Data Berhasil disimpan"
+        key={'top' + 'center'}
+      />
       <ModalConfirmation
         data={formData}
         open={openModal}

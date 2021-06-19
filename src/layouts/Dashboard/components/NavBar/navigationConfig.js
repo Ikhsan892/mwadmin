@@ -15,6 +15,7 @@ import PersonIcon from '@material-ui/icons/PersonOutlined';
 import ReceiptIcon from '@material-ui/icons/ReceiptOutlined';
 import SettingsIcon from '@material-ui/icons/SettingsOutlined';
 import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
+import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import { Label } from 'components';
 
 export default [
@@ -46,6 +47,11 @@ export default [
   {
     title: 'Orderan & Pelanggan',
     pages: [
+      {
+        title: 'New Request',
+        href: '/barang/new-request',
+        icon: ControlPointIcon
+      },
       {
         title: 'Manajemen',
         href: '/management',

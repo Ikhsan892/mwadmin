@@ -56,15 +56,15 @@ const CustomerInfo = props => {
   };
 
   return (
-    <Card
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
-      <CardHeader title="Info Pelanggan" action={
+    <Card {...rest} className={clsx(classes.root, className)}>
+      <CardHeader
+        title="Info Pelanggan"
+        action={
           <IconButton aria-label="settings" onClick={handleEditOpen}>
-            <EditIcon/>
+            <EditIcon />
           </IconButton>
-        }/>
+        }
+      />
       <Divider />
       <CardContent className={classes.content}>
         <Table>
@@ -74,7 +74,7 @@ const CustomerInfo = props => {
               <TableCell>
                 {customer.email}
                 <div>
-                  <Label
+                  {/* <Label
                     color={
                       customer.verified ? colors.green[600] : colors.orange[600]
                     }
@@ -82,13 +82,13 @@ const CustomerInfo = props => {
                     {customer.verified
                       ? 'Email Terverifikasi'
                       : 'Email Belum Terverifikasi'}
-                  </Label>
+                  </Label> */}
                 </div>
               </TableCell>
             </TableRow>
             <TableRow selected>
               <TableCell>Telepon</TableCell>
-              <TableCell>{customer.phone}</TableCell>
+              <TableCell>{customer.no_telepon}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Kecamatan</TableCell>
@@ -100,15 +100,15 @@ const CustomerInfo = props => {
             </TableRow>
             <TableRow>
               <TableCell>Provinsi</TableCell>
-              <TableCell>{customer.state}</TableCell>
+              <TableCell>{customer.provinsi}</TableCell>
             </TableRow>
             <TableRow selected>
               <TableCell>Negara</TableCell>
-              <TableCell>{customer.country}</TableCell>
+              <TableCell>{customer.negara}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Alamat</TableCell>
-              <TableCell>{customer.address1}</TableCell>
+              <TableCell>{customer.alamat}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

@@ -1,18 +1,11 @@
-import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import clsx from 'clsx';
-import PropTypes from 'prop-types';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import { makeStyles } from '@material-ui/styles';
 import {
-  Avatar,
+  Button,
   Card,
   CardActions,
   CardContent,
   CardHeader,
   Checkbox,
   Divider,
-  Button,
   Link,
   Table,
   TableBody,
@@ -20,11 +13,19 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TableSortLabel,
   Typography
 } from '@material-ui/core';
-
-import getInitials from 'utils/getInitials';
-import { ReviewStars, GenericMoreButton, TableEditBar } from 'components';
+import { makeStyles } from '@material-ui/styles';
+import clsx from 'clsx';
+import { GenericMoreButton, TableEditBar } from 'components';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+import { useDispatch } from 'react-redux';
+import { Link as RouterLink } from 'react-router-dom';
+import { stableSort, getComparator } from 'utils/sortable';
+import client from 'utils/axios';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -36,7 +37,11 @@ const useStyles = makeStyles(theme => ({
   },
   nameCell: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    textTransform: 'capitalize'
+  },
+  capitalize: {
+    textTransform: 'capitalize'
   },
   avatar: {
     height: 42,
@@ -46,19 +51,56 @@ const useStyles = makeStyles(theme => ({
   actions: {
     padding: theme.spacing(1),
     justifyContent: 'flex-end'
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1
   }
 }));
 
+const headerTable = [
+  {
+    id: 'nama_depan',
+    label: 'Nama'
+  },
+  {
+    id: 'kota_kabupaten',
+    label: 'Lokasi'
+  },
+  {
+    id: 'gender',
+    label: 'Gender'
+  },
+  {
+    id: 'umur',
+    label: 'Umur'
+  },
+  {
+    id: 'no_telepon',
+    label: 'No Telepon'
+  }
+];
+
 const Results = props => {
-  const { className, customers, ...rest } = props;
+  const { className, customers, search, ...rest } = props;
 
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const firstIndex = page * rowsPerPage
-  const lastIndex = ((page * rowsPerPage) + rowsPerPage)
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('nama_depan');
+  const firstIndex = page * rowsPerPage;
+  const lastIndex = page * rowsPerPage + rowsPerPage;
 
   const handleSelectAll = event => {
     const selectedCustomers = event.target.checked
@@ -66,6 +108,30 @@ const Results = props => {
       : [];
 
     setSelectedCustomers(selectedCustomers);
+  };
+
+  const handleClickOpenDelete = () => {
+    let delete_data = window.confirm('Are you sure wants to delete this data');
+    if (delete_data) {
+      let body = {
+        id: selectedCustomers
+      };
+      client
+        .delete(`/api/pelanggan/bulk`, {
+          data: body
+        })
+        .then(data => {
+          setSelectedCustomers([]);
+          dispatch({ type: 'PELANGGAN_INSERTED' });
+        })
+        .catch(err => console.log(err));
+    }
+  };
+
+  const createSortHandler = property => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
   };
 
   const handleSelectOne = (event, id) => {
@@ -92,6 +158,10 @@ const Results = props => {
     setSelectedCustomers(newSelectedCustomers);
   };
 
+  const handleList = () => {
+    return search.length > 0 ? search : customers;
+  };
+
   const handleChangePage = (event, page) => {
     setPage(page);
   };
@@ -112,7 +182,7 @@ const Results = props => {
         <CardContent className={classes.content}>
           <PerfectScrollbar>
             <div className={classes.inner}>
-              <Table>
+              <Table size="small">
                 <TableHead>
                   <TableRow>
                     <TableCell padding="checkbox">
@@ -126,74 +196,85 @@ const Results = props => {
                         onChange={handleSelectAll}
                       />
                     </TableCell>
-                    <TableCell>Nama</TableCell>
-                    <TableCell>Lokasi</TableCell>
-                    <TableCell>Gender</TableCell>
-                    <TableCell>Umur</TableCell>
-                    <TableCell>Total Orderan</TableCell>
-                    <TableCell>No Telepon</TableCell>
+                    {headerTable.map(i => (
+                      <TableCell
+                        key={i.id}
+                        sortDirection={orderBy === i.id ? order : false}>
+                        <TableSortLabel
+                          active={orderBy === i.id}
+                          direction={orderBy === i.id ? order : 'asc'}
+                          onClick={() => createSortHandler(i.id)}>
+                          {i.label}
+                          {orderBy === i.id ? (
+                            <span className={classes.visuallyHidden}>
+                              {order === 'desc'
+                                ? 'sorted descending'
+                                : 'sorted ascending'}
+                            </span>
+                          ) : null}
+                        </TableSortLabel>
+                      </TableCell>
+                    ))}
                     <TableCell align="right">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {customers.slice(firstIndex, lastIndex).map(customer => (
-                    <TableRow
-                      hover
-                      key={customer.id}
-                      selected={selectedCustomers.indexOf(customer.id) !== -1}>
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={
-                            selectedCustomers.indexOf(customer.id) !== -1
-                          }
-                          color="primary"
-                          onChange={event =>
-                            handleSelectOne(event, customer.id)
-                          }
-                          value={selectedCustomers.indexOf(customer.id) !== -1}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <div className={classes.nameCell}>
-                          <Avatar
-                            className={classes.avatar}
-                            src={customer.avatar}>
-                            {getInitials(customer.name)}
-                          </Avatar>
-                          <div>
+                  {stableSort(handleList(), getComparator(order, orderBy))
+                    .slice(firstIndex, lastIndex)
+                    .map(customer => (
+                      <TableRow
+                        hover
+                        key={customer.id}
+                        selected={
+                          selectedCustomers.indexOf(customer.id) !== -1
+                        }>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={
+                              selectedCustomers.indexOf(customer.id) !== -1
+                            }
+                            color="primary"
+                            onChange={event =>
+                              handleSelectOne(event, customer.id)
+                            }
+                            value={
+                              selectedCustomers.indexOf(customer.id) !== -1
+                            }
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div className={classes.nameCell}>
                             <Link
                               color="inherit"
                               component={RouterLink}
                               to="/management/customers/1"
                               variant="h6">
-                              {customer.name}
+                              {customer.nama_depan} {customer.nama_belakang}
                             </Link>
-                            <div>{customer.email}</div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{customer.location}</TableCell>
-                      <TableCell>
-                        {customer.gender}
-                      </TableCell>
-                      <TableCell>{customer.umur}</TableCell>
-                      <TableCell>{customer.projects}</TableCell>
-                      <TableCell>
-                      {customer.rating}
-                        {/* <ReviewStars value={customer.rating} /> */}
-                      </TableCell>
-                      <TableCell align="right">
-                        <Button
-                          color="primary"
-                          component={RouterLink}
-                          size="small"
-                          to={`/management/customers/${customer.id}`}
-                          variant="outlined">
-                          Lihat
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+                        <TableCell className={classes.capitalize}>
+                          {customer.kota_kabupaten}
+                        </TableCell>
+                        <TableCell className={classes.capitalize}>
+                          {customer.gender}
+                        </TableCell>
+                        <TableCell>{customer.umur}</TableCell>
+                        <TableCell className={classes.capitalize}>
+                          {customer.no_telepon}
+                        </TableCell>
+                        <TableCell align="right">
+                          <Button
+                            color="primary"
+                            component={RouterLink}
+                            size="small"
+                            to={`/management/customers/${customer.id}`}
+                            variant="outlined">
+                            Detail
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </div>
@@ -211,7 +292,10 @@ const Results = props => {
           />
         </CardActions>
       </Card>
-      <TableEditBar selected={selectedCustomers} />
+      <TableEditBar
+        selected={selectedCustomers}
+        onClick={handleClickOpenDelete}
+      />
     </div>
   );
 };

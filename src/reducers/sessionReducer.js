@@ -25,12 +25,12 @@ const sessionReducer = (state = initialState, action) => {
         status: 200,
         token: action.token,
         user: {
-          first_name: action.data.name,
-          last_name: '--',
+          first_name: action.data.firstName,
+          last_name: action.data.lastName,
           email: action.data.email,
-          avatar: action.data.profile_image,
-          bio: action.data.jabatan ? action.data.jabatan : '-',
-          role: action.data.role.toUpperCase()
+          // avatar: action.data.profile_image,
+          bio: action.data.role.nama_role ? action.data.role.nama_role : '-',
+          role: action.data.role.nama_role.toUpperCase()
         }
       };
     }

@@ -62,6 +62,21 @@ const Results = props => {
     setSelectedOrders(selectedOrders);
   };
 
+  const handleTotalSummary = order => {
+    let subtotal = order.subtotal_resis.reduce(
+      (init, curr) => (init += curr['nominal']),
+      0
+    );
+
+    let sparepart = order.barangs.map(i =>
+      i.kerusakans.map(kerusakan =>
+        kerusakan.spareparts.reduce((init, curr) => (init += curr['harga']), 0)
+      )
+    );
+    let summary = parseInt(subtotal) + parseInt(sparepart);
+    return summary;
+  };
+
   const handleSelectOne = (event, id) => {
     const selectedIndex = selectedOrders.indexOf(id);
     let newSelectedOrders = [];
@@ -91,9 +106,9 @@ const Results = props => {
   };
 
   const paymentStatusColors = {
-    canceled: colors.grey[600],
-    pending: colors.orange[600],
-    dibayar: colors.green[600],
+    batal: colors.grey[600],
+    dp: colors.orange[600],
+    lunas: colors.green[600],
     refund: colors.red[600]
   };
 
@@ -123,6 +138,7 @@ const Results = props => {
                         onChange={handleSelectAll}
                       />
                     </TableCell>
+                    <TableCell>Tanggal Invoice</TableCell>
                     <TableCell>No Invoice</TableCell>
                     <TableCell>Pelanggan</TableCell>
                     <TableCell>Metode Pembayaran</TableCell>
@@ -145,25 +161,31 @@ const Results = props => {
                         />
                       </TableCell>
                       <TableCell>
-                        {order.payment.ref}
+                        {/* {order.payment.ref} */}
                         <Typography variant="body2">
                           {moment(order.created_at).format(
                             'DD MMM YYYY | hh:mm'
                           )}
                         </Typography>
                       </TableCell>
-
-                      <TableCell>{order.customer.name}</TableCell>
-                      <TableCell>{order.payment.method}</TableCell>
+                      <TableCell>{order.no_resi}</TableCell>
                       <TableCell>
-                        {order.payment.currency}
-                        {order.payment.total}
+                        {order.customer.nama_depan}{' '}
+                        {order.customer.nama_belakang}
                       </TableCell>
                       <TableCell>
+                        {order.metode_pembayaran.nama_metode_pembayaran}
+                      </TableCell>
+                      <TableCell>{handleTotalSummary(order)}</TableCell>
+                      <TableCell>
                         <Label
-                          color={paymentStatusColors[order.payment.status]}
+                          color={
+                            paymentStatusColors[
+                              order.status_pembayaran.nama_status_pembayaran
+                            ]
+                          }
                           variant="outlined">
-                          {order.payment.status}
+                          {order.status_pembayaran.nama_status_pembayaran}
                         </Label>
                       </TableCell>
                       <TableCell align="right">
@@ -171,7 +193,7 @@ const Results = props => {
                           color="primary"
                           component={RouterLink}
                           size="small"
-                          to={'/management/orders/1'}
+                          to={`/management/orders/${order.id}`}
                           variant="outlined">
                           View
                         </Button>

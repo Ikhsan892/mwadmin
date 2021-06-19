@@ -1,42 +1,49 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
-import { Grid, Typography, Button } from '@material-ui/core';
-import ModalAddCustomer from '../ModalAddCustomer';
+import { Typography, Grid, Button, colors } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 
-const useStyles = makeStyles(() => ({
-  root: {}
+const useStyles = makeStyles(theme => ({
+  root: {},
+  toolbar: {
+    '& > * + *': {
+      marginLeft: theme.spacing(1)
+    }
+  },
+  deleteButton: {
+    color: theme.palette.white,
+    backgroundColor: colors.red[600],
+    '&:hover': {
+      backgroundColor: colors.red[900]
+    }
+  },
+  deleteIcon: {
+    marginRight: theme.spacing(1)
+  }
 }));
 
 const Header = props => {
   const { className, ...rest } = props;
-  const [open, setOpen] = useState(false);
 
   const classes = useStyles();
 
   return (
     <div {...rest} className={clsx(classes.root, className)}>
-      <ModalAddCustomer
-        open={open}
-        handleClose={() => setOpen(false)}
-        title="Tambah Customer"
-      />
       <Grid alignItems="flex-end" container justify="space-between" spacing={3}>
         <Grid item>
           <Typography component="h2" gutterBottom variant="overline">
-            Manajemen
+            New Request
           </Typography>
           <Typography component="h1" variant="h3">
-            Pelanggan
+            Buat Request baru untuk barang
           </Typography>
         </Grid>
         <Grid item>
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={() => setOpen(true)}>
-            Tambah Pelanggan
+          <Button className={classes.deleteButton} variant="contained">
+            <DeleteIcon className={classes.deleteIcon} />
+            Delete
           </Button>
         </Grid>
       </Grid>

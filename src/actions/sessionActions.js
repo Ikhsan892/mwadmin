@@ -10,42 +10,37 @@ export const login = (email, password) => {
     dispatch({
       type: SESSION_REQUEST_LOGIN_TRUE
     });
-    await client.get('/sanctum/csrf-cookie').then(async resp => {
-      await client
-        .post(`/api/user/login`, {
-          email: email,
-          password: password
-        })
-        .then(resp => {
-          if (resp.status === 227) {
-            dispatch({
-              type: SESSION_INVALID_CREDENTIAL,
-              message: resp.data.message,
-              status: resp.data.status
-            });
-          } else if (resp.status === 201) {
-            dispatch({
-              type: SESSION_LOGIN,
-              data: resp.data.user,
-              token: resp.data.token
-            });
-          }
+    await client
+      .post(`/api/auth/login`, {
+        email: email,
+        password: password
+      })
+      .then(resp => {
+        if (resp.status === 201) {
+          dispatch({
+            type: SESSION_LOGIN,
+            data: resp.data.user,
+            token: resp.data.access_token
+          });
+        } else {
+          dispatch({
+            type: SESSION_INVALID_CREDENTIAL,
+            message: resp.data.message,
+            status: resp.data.status
+          });
+        }
+        dispatch({
+          type: SESSION_REQUEST_LOGIN_FALSE
+        });
+      })
+      .catch(err => {
+        if (err.message) {
+          alert(err.message);
           dispatch({
             type: SESSION_REQUEST_LOGIN_FALSE
           });
-        })
-        .catch(err => {
-          if (err.message) {
-            alert(err.message);
-            dispatch({
-              type: SESSION_REQUEST_LOGIN_FALSE
-            });
-          }
-        });
-    });
-    dispatch({
-      type: SESSION_REQUEST_LOGIN_FALSE
-    });
+        }
+      });
   };
 };
 export const userData = () => {
@@ -54,7 +49,7 @@ export const userData = () => {
       type: SESSION_REQUEST_LOGIN_TRUE
     });
     let res = await client.get('/api/user/detail');
-    if(res && res.data && res.data.user){
+    if (res && res.data && res.data.user) {
       dispatch({
         type: SESSION_LOGIN,
         data: res.data.user
