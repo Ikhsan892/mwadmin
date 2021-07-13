@@ -21,7 +21,7 @@ const history = createBrowserHistory();
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch({ type: 'ON_MAINTAINED' });
+    dispatch({ type: 'ON_MAINTAIN_FALSE' });
   }, []);
   return (
     <ThemeProvider theme={theme}>

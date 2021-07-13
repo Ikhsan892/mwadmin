@@ -1,29 +1,38 @@
-import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import clsx from 'clsx';
-import moment from 'moment';
-import PropTypes from 'prop-types';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import { makeStyles } from '@material-ui/styles';
 import {
   Card,
   CardActions,
   CardContent,
   CardHeader,
   Checkbox,
+  colors,
   Divider,
-  Switch,
-  Typography,
+  IconButton,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
   TableRow,
-  colors
+  TableSortLabel,
+  Typography,
+  Tooltip
 } from '@material-ui/core';
-
-import { Label, GenericMoreButton, TableEditBar } from 'components';
+import { Edit } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/styles';
+import clsx from 'clsx';
+import {
+  GenericMoreButton,
+  Label,
+  SwitchActive,
+  TableEditBar
+} from 'components';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+import { useDispatch } from 'react-redux';
+import { getComparator, stableSort } from 'utils/sortable';
+import client from 'utils/axios';
+import ModalPengiriman from '../ModalPengiriman';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -41,18 +50,49 @@ const useStyles = makeStyles(theme => ({
   images: {
     width: 70,
     height: 'auto'
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1
+  },
+  uppercase: {
+    textTransform: 'uppercase'
   }
 }));
 
+const headerTable = [
+  {
+    id: 'nama_pengiriman',
+    label: 'Nama Pengiriman'
+  },
+  {
+    id: 'aktif',
+    label: 'Aktif'
+  }
+];
+
 const Results = props => {
-  const { className, pengiriman, ...rest } = props;
+  const { className, pengiriman, search, ...rest } = props;
 
   const classes = useStyles();
 
   const [selectedPengiriman, setSelectedPengiriman] = useState([]);
   const [page, setPage] = useState(0);
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('nama_pengiriman');
+  const [edit, setEdit] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [url, setUrl] = useState('http://localhost:3000/api/pengiriman');
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const dispatch = useDispatch();
   const firstIndex = page * rowsPerPage;
   const lastIndex = page * rowsPerPage + rowsPerPage;
 
@@ -62,6 +102,30 @@ const Results = props => {
       : [];
 
     setSelectedPengiriman(selectedPengiriman);
+  };
+
+  const handleClickOpenDelete = () => {
+    let delete_data = window.confirm('Are you sure wants to delete this data');
+    if (delete_data) {
+      let body = {
+        id: selectedPengiriman
+      };
+      client
+        .delete(`/api/pengiriman`, {
+          data: body
+        })
+        .then(data => {
+          setSelectedPengiriman([]);
+          dispatch({ type: 'PENGIRIMAN_TRIGGER' });
+        })
+        .catch(err => console.log(err));
+    }
+  };
+
+  const createSortHandler = property => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
   };
 
   const handleSelectOne = (event, id) => {
@@ -99,6 +163,16 @@ const Results = props => {
     setRowsPerPage(event.target.value);
   };
 
+  const handleOpenEdit = id => {
+    setUrl(`http://localhost:3000/api/pengiriman/${id}`);
+    setEdit(true);
+    setOpen(true);
+  };
+
+  const handleList = () => {
+    return search.length > 0 ? search : pengiriman;
+  };
+
   const activeColors = {
     false: colors.grey[600],
     true: colors.green[600]
@@ -106,6 +180,16 @@ const Results = props => {
 
   return (
     <div {...rest} className={clsx(classes.root, className)}>
+      <ModalPengiriman
+        onEdit={edit}
+        url={url}
+        open={open}
+        title="Edit Data Pengiriman"
+        handleClose={() => {
+          setOpen(false);
+          setEdit(false);
+        }}
+      />
       <Typography color="textSecondary" gutterBottom variant="body2">
         {pengiriman.length} Records found. Page {page + 1} of{' '}
         {Math.ceil(pengiriman.length / rowsPerPage)}
@@ -136,43 +220,83 @@ const Results = props => {
                       />
                     </TableCell>
                     <TableCell>Image</TableCell>
-                    <TableCell>Nama Pengiriman</TableCell>
-                    <TableCell>Aktif</TableCell>
+                    {headerTable.map(i => (
+                      <TableCell
+                        key={i.id}
+                        sortDirection={orderBy === i.id ? order : false}>
+                        <TableSortLabel
+                          active={orderBy === i.id}
+                          direction={orderBy === i.id ? order : 'asc'}
+                          onClick={() => createSortHandler(i.id)}>
+                          {i.label}
+                          {orderBy === i.id ? (
+                            <span className={classes.visuallyHidden}>
+                              {order === 'desc'
+                                ? 'sorted descending'
+                                : 'sorted ascending'}
+                            </span>
+                          ) : null}
+                        </TableSortLabel>
+                      </TableCell>
+                    ))}
                     <TableCell></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {pengiriman.slice(firstIndex, lastIndex).map(order => (
-                    <TableRow
-                      key={order.id}
-                      selected={selectedPengiriman.indexOf(order.id) !== -1}>
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={selectedPengiriman.indexOf(order.id) !== -1}
-                          color="primary"
-                          onChange={event => handleSelectOne(event, order.id)}
-                          value={selectedPengiriman.indexOf(order.id) !== -1}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <img src={order.images} className={classes.images} />
-                      </TableCell>
-                      <TableCell>{order.pengiriman}</TableCell>
-                      <TableCell>
-                        <Switch
-                          checked={order.active}
-                          color="primary"
-                          name="aktif"
-                          inputProps={{ 'aria-label': 'primary checkbox' }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Label color={activeColors[order.active]}>
-                          {order.active ? 'Aktif' : 'Tidak Aktif'}
-                        </Label>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {stableSort(handleList(), getComparator(order, orderBy))
+                    .slice(firstIndex, lastIndex)
+                    .map(order => (
+                      <TableRow
+                        key={order.id}
+                        selected={selectedPengiriman.indexOf(order.id) !== -1}>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={
+                              selectedPengiriman.indexOf(order.id) !== -1
+                            }
+                            color="primary"
+                            onChange={event => handleSelectOne(event, order.id)}
+                            value={selectedPengiriman.indexOf(order.id) !== -1}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <img
+                            src={
+                              order.image_path
+                                ? `http://localhost:3000/${order.image_path}`
+                                : '/images/default.png'
+                            }
+                            className={classes.images}
+                          />
+                        </TableCell>
+                        <TableCell className={classes.uppercase}>
+                          {order.nama_pengiriman}
+                        </TableCell>
+                        <TableCell>
+                          <SwitchActive
+                            active={order.aktif}
+                            id={order.id}
+                            url="/api/pengiriman"
+                            trigger="PENGIRIMAN_TRIGGER"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Label color={activeColors[order.aktif]}>
+                            {order.aktif ? 'Aktif' : 'Tidak Aktif'}
+                          </Label>
+                        </TableCell>
+                        <TableCell>
+                          <Tooltip title="Edit">
+                            <IconButton
+                              color="primary"
+                              aria-label="edit data"
+                              onClick={() => handleOpenEdit(order.id)}>
+                              <Edit />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </div>
@@ -190,7 +314,10 @@ const Results = props => {
           />
         </CardActions>
       </Card>
-      <TableEditBar selected={selectedPengiriman} />
+      <TableEditBar
+        selected={selectedPengiriman}
+        onClick={handleClickOpenDelete}
+      />
     </div>
   );
 };

@@ -28,7 +28,7 @@ const sessionReducer = (state = initialState, action) => {
           first_name: action.data.firstName,
           last_name: action.data.lastName,
           email: action.data.email,
-          // avatar: action.data.profile_image,
+          avatar: action.data.avatar,
           bio: action.data.role.nama_role ? action.data.role.nama_role : '-',
           role: action.data.role.nama_role.toUpperCase()
         }

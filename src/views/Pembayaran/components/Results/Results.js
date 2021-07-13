@@ -20,13 +20,17 @@ import {
 import { makeStyles } from '@material-ui/styles';
 import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
-import { GenericMoreButton, Label, TableEditBar } from 'components';
+import {
+  GenericMoreButton,
+  Label,
+  TableEditBar,
+  SwitchActive
+} from 'components';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { getComparator, stableSort } from 'utils/sortable';
 import client from 'utils/axios';
-import SwitchActive from '../SwitchActive';
 import { Edit } from '@material-ui/icons';
 import ModalEditPayment from '../ModalEditPayment';
 
@@ -240,20 +244,25 @@ const Results = props => {
                           />
                         </TableCell>
                         <TableCell>
-                          {order.image_path ? (
-                            <img
-                              src={order.image_path}
-                              className={classes.images}
-                            />
-                          ) : (
-                            ''
-                          )}
+                          <img
+                            src={
+                              order.image_path
+                                ? `http://localhost:3000/${order.image_path}`
+                                : '/images/default.png'
+                            }
+                            className={classes.images}
+                          />
                         </TableCell>
                         <TableCell className={classes.name_payment}>
                           {order.name_payment}
                         </TableCell>
                         <TableCell>
-                          <SwitchActive active={order.aktif} id={order.id} />
+                          <SwitchActive
+                            active={order.aktif}
+                            id={order.id}
+                            url="/api/payment-method"
+                            trigger="PAYMENT_INSERTED"
+                          />
                         </TableCell>
                         <TableCell>
                           <Label color={activeColors[order.aktif]}>

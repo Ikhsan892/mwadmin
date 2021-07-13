@@ -1,10 +1,14 @@
 import { FormControlLabel, Grid, Switch, TextField } from '@material-ui/core';
+import { FilesDropzone } from 'components';
 import React from 'react';
 
 const PaymentForm = ({ ...props }) => {
   return (
     <>
       <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <FilesDropzone formik={props} name="attachment" />
+        </Grid>
         <Grid item xs={12}>
           <TextField
             required

@@ -1,26 +1,22 @@
-import React, { Fragment, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import uuid from 'uuid/v1';
-import { useDropzone } from 'react-dropzone';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import { makeStyles } from '@material-ui/styles';
 import {
   Button,
-  IconButton,
+  colors,
   Link,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Typography,
-  Tooltip,
-  colors
+  Typography
 } from '@material-ui/core';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-import MoreIcon from '@material-ui/icons/MoreVert';
-
+import { makeStyles } from '@material-ui/styles';
+import clsx from 'clsx';
+import PropTypes from 'prop-types';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import bytesToSize from 'utils/bytesToSize';
+import uuid from 'uuid/v1';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -62,7 +58,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const FilesDropzone = props => {
-  const { className, ...rest } = props;
+  const { className, multiple, formik, name, ...rest } = props;
 
   const classes = useStyles();
 
@@ -77,21 +73,27 @@ const FilesDropzone = props => {
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: handleDrop
+    onDrop: handleDrop,
+    multiple: multiple ? multiple : false,
+    accept: 'image/jpeg, image/png'
   });
 
+  useEffect(() => {
+    if (files[0] === null || files[0] === undefined) {
+      return;
+    } else {
+      formik.setFieldValue(name, files);
+    }
+  }, [files]);
+
   return (
-    <div
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <div {...rest} className={clsx(classes.root, className)}>
       <div
         className={clsx({
           [classes.dropZone]: true,
           [classes.dragActive]: isDragActive
         })}
-        {...getRootProps()}
-      >
+        {...getRootProps()}>
         <input {...getInputProps()} />
         <div>
           <img
@@ -101,19 +103,15 @@ const FilesDropzone = props => {
           />
         </div>
         <div>
-          <Typography
-            gutterBottom
-            variant="h3"
-          >
-            Select files
+          <Typography gutterBottom variant="h3">
+            Pilih File
           </Typography>
           <Typography
             className={classes.info}
             color="textSecondary"
-            variant="body1"
-          >
-            Drop files here or click <Link underline="always">browse</Link>{' '}
-            thorough your machine
+            variant="body1">
+            Taruh file atau klik <Link underline="always">pencarian</Link> di
+            komputermu
           </Typography>
         </div>
       </div>
@@ -122,10 +120,7 @@ const FilesDropzone = props => {
           <PerfectScrollbar options={{ suppressScrollX: true }}>
             <List className={classes.list}>
               {files.map((file, i) => (
-                <ListItem
-                  divider={i < files.length - 1}
-                  key={uuid()}
-                >
+                <ListItem divider={i < files.length - 1} key={uuid()}>
                   <ListItemIcon>
                     <FileCopyIcon />
                   </ListItemIcon>
@@ -134,29 +129,22 @@ const FilesDropzone = props => {
                     primaryTypographyProps={{ variant: 'h5' }}
                     secondary={bytesToSize(file.size)}
                   />
-                  <Tooltip title="More options">
+                  {/* <Tooltip title="More options">
                     <IconButton edge="end">
                       <MoreIcon />
                     </IconButton>
-                  </Tooltip>
+                  </Tooltip> */}
                 </ListItem>
               ))}
             </List>
           </PerfectScrollbar>
           <div className={classes.actions}>
-            <Button
-              onClick={handleRemoveAll}
-              size="small"
-            >
+            <Button onClick={handleRemoveAll} size="small">
               Remove all
             </Button>
-            <Button
-              color="secondary"
-              size="small"
-              variant="contained"
-            >
+            {/* <Button color="secondary" size="small" variant="contained">
               Upload files
-            </Button>
+            </Button> */}
           </div>
         </Fragment>
       )}

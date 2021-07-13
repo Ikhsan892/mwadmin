@@ -90,7 +90,7 @@ const NavBar = props => {
             alt="Person"
             className={classes.avatar}
             component={RouterLink}
-            src={session.user.avatar}
+            src={`http://localhost:3000/${session.user.avatar}`}
             to="/profile/1/timeline"
           />
         )}

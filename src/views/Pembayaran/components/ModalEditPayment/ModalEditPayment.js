@@ -1,5 +1,6 @@
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { Formik, Form } from 'formik';
 import { useDispatch } from 'react-redux';
@@ -14,15 +15,24 @@ import {
 import PaymentForm from '../PaymentForm';
 import client from 'utils/axios';
 
-const useStyles = makeStyles(theme => ({}));
+const useStyles = makeStyles(theme => ({
+  img_preview: {
+    objectFit: 'cover',
+    margin: '0 auto',
+    width: '250px',
+    height: 'auto'
+  }
+}));
 
 export default function ModalEditPayment({ open, handleClose, title, id }) {
   /**
    * List of States
    */
   const [loading, setLoading] = React.useState(false);
+  const [image, setImage] = React.useState('');
   const formikRef = React.useRef(null);
 
+  const classes = useStyles();
   /**
    *
    * List of hooks
@@ -38,8 +48,20 @@ export default function ModalEditPayment({ open, handleClose, title, id }) {
    */
   const handleSubmit = values => {
     setLoading(true);
+    let formData = new FormData();
+    for (var key in values) {
+      formData.append(`${key}`, `${values[key].toString()}`);
+    }
+    Array.from(values.attachment).map(i => formData.append('file', i));
     request
-      .put(`/api/payment-method/${id}`, values)
+      .put(`/api/payment-method/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: ev => {
+          const progress = Math.round((ev.loaded / ev.total) * 100);
+        }
+      })
       .then(data => {
         setLoading(false);
         dispatch({ type: 'PAYMENT_INSERTED' });
@@ -63,6 +85,9 @@ export default function ModalEditPayment({ open, handleClose, title, id }) {
           'name_payment',
           response.data.name_payment
         );
+        response.data.image_path
+          ? setImage(`http://localhost:3000${response.data.image_path}`)
+          : setImage('');
       }
     };
 
@@ -82,6 +107,7 @@ export default function ModalEditPayment({ open, handleClose, title, id }) {
     <Formik
       innerRef={formikRef}
       initialValues={{
+        attachment: [],
         name_payment: ''
       }}
       validationSchema={OrderSchema}
@@ -100,6 +126,14 @@ export default function ModalEditPayment({ open, handleClose, title, id }) {
                 {title}
               </DialogTitle>
               <DialogContent>
+                <Grid container>
+                  <Grid xs={12}>
+                    <img
+                      src={image === '' ? `/images/default.png` : image}
+                      className={classes.img_preview}
+                    />
+                  </Grid>
+                </Grid>
                 <PaymentForm {...props} onEdit={true} />
               </DialogContent>
               <DialogActions>

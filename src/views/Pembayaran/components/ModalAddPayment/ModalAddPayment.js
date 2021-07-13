@@ -38,8 +38,20 @@ export default function ModalAddPayment({ open, handleClose, title }) {
    */
   const handleSubmit = values => {
     setLoading(true);
+    let formData = new FormData();
+    for (var key in values) {
+      formData.append(`${key}`, `${values[key].toString()}`);
+    }
+    Array.from(values.attachment).map(i => formData.append('file', i));
     request
-      .post('/api/payment-method', values)
+      .post('/api/payment-method', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: ev => {
+          const progress = Math.round((ev.loaded / ev.total) * 100);
+        }
+      })
       .then(data => {
         setLoading(false);
         dispatch({ type: 'PAYMENT_INSERTED' });
@@ -49,6 +61,7 @@ export default function ModalAddPayment({ open, handleClose, title }) {
       .catch(err => {
         alert('tidak berhasil');
         console.log(err);
+        setLoading(false);
       });
   };
 
@@ -66,6 +79,7 @@ export default function ModalAddPayment({ open, handleClose, title }) {
     <Formik
       innerRef={formikRef}
       initialValues={{
+        attachment: [],
         name_payment: '',
         aktif: false
       }}
