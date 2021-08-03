@@ -25,7 +25,14 @@ const Interceptors = () => {
       err => {
         if (err.response) {
           if (err.response?.status === 401) {
-            removeCookie('_TuVbwpW');
+            document.cookie.split(';').forEach(c => {
+              document.cookie = c
+                .replace(/^ +/, '')
+                .replace(
+                  /=.*/,
+                  '=;expires=' + new Date().toUTCString() + ';path=/'
+                );
+            });
             dispatch(logout());
             router.history.push('/auth/login');
           } else if (
@@ -33,7 +40,14 @@ const Interceptors = () => {
             (err.response?.data.message === 'token invalid' ||
               err.response?.data.message === 'jwt expired')
           ) {
-            removeCookie('_TuVbwpW');
+            document.cookie.split(';').forEach(c => {
+              document.cookie = c
+                .replace(/^ +/, '')
+                .replace(
+                  /=.*/,
+                  '=;expires=' + new Date().toUTCString() + ';path=/'
+                );
+            });
             dispatch(logout());
             router.history.push('/auth/login');
           } else {

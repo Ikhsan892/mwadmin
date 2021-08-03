@@ -25,3 +25,4 @@ export { default as TableEditBar } from './TableEditBar';
 export { default as RadioButton } from './RadioButton';
 export { default as NegaraField } from './NegaraField';
 export { DialogTitle, DialogContent, DialogActions } from './ModalSubComponent';
+export { default as SwitchActive } from './SwitchActive';

@@ -29,7 +29,7 @@ const Header = props => {
           <Button
             color="primary"
             variant="contained"
-            to="/management/orders/create"
+            to="/barang/new-request"
             component={Link}>
             Buat Orderan
           </Button>

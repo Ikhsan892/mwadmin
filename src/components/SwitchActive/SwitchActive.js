@@ -7,10 +7,10 @@ const SwitchActive = ({ ...props }) => {
   const dispatch = useDispatch();
 
   const handleChange = async () => {
-    await client.put('/api/payment-method', {
+    await client.put(props.url, {
       id: props.id
     });
-    dispatch({ type: 'PAYMENT_INSERTED' });
+    dispatch({ type: props.trigger });
   };
 
   return (

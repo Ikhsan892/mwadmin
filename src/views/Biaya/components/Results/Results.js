@@ -1,9 +1,3 @@
-import React, { useState } from 'react';
-import clsx from 'clsx';
-import PropTypes from 'prop-types';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import rupiahFormat from 'rupiah-format';
-import { makeStyles } from '@material-ui/styles';
 import {
   Button,
   Card,
@@ -11,19 +5,34 @@ import {
   CardContent,
   CardHeader,
   Checkbox,
+  colors,
   Divider,
-  Switch,
-  Typography,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
   TableRow,
-  colors
+  TableSortLabel,
+  Typography
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
-import { GenericMoreButton, TableEditBar } from 'components';
+import { makeStyles } from '@material-ui/styles';
+import clsx from 'clsx';
+import {
+  GenericMoreButton,
+  Label,
+  SwitchActive,
+  TableEditBar
+} from 'components';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+import { useDispatch } from 'react-redux';
+import rupiahFormat from 'rupiah-format';
+import client from 'utils/axios';
+import { getComparator, stableSort } from 'utils/sortable';
+import ModalBiaya from '../ModalBiaya';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -33,6 +42,9 @@ const useStyles = makeStyles(theme => ({
   content: {
     padding: 0
   },
+  capitalize: {
+    textTransform: 'capitalize'
+  },
   inner: {},
   actions: {
     padding: theme.spacing(0, 1),
@@ -41,17 +53,50 @@ const useStyles = makeStyles(theme => ({
   images: {
     width: 70,
     height: 'auto'
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1
   }
 }));
 
+const headerTable = [
+  {
+    id: 'nama_biaya',
+    label: 'Nama Biaya'
+  },
+  {
+    id: 'biaya_ditaksir',
+    label: 'Biaya Ditaksir'
+  },
+  {
+    id: 'is_utama',
+    label: 'Jadi Utama'
+  }
+];
+
 const Results = props => {
-  const { className, biaya, ...rest } = props;
+  const { className, biaya, search, ...rest } = props;
 
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const [selectedBiaya, setSelectedBiaya] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('nama_biaya');
+  const [url, setUrl] = useState('http://localhost:3000/api/biaya-tambahan');
+  const [open, setOpen] = useState(false);
+  const [onEdit, setOnEdit] = useState(false);
+  const [title, setTitle] = useState('Tambahan Biaya Tambahan');
 
   const firstIndex = page * rowsPerPage;
   const lastIndex = page * rowsPerPage + rowsPerPage;
@@ -60,6 +105,41 @@ const Results = props => {
     const selectedBiaya = event.target.checked ? biaya.map(m => m.id) : [];
 
     setSelectedBiaya(selectedBiaya);
+  };
+
+  const handleOpenEdit = id => {
+    setUrl(`http://localhost:3000/api/biaya-tambahan/${id}`);
+    setOnEdit(true);
+    setTitle('Edit Biaya Tambahan');
+    setOpen(true);
+  };
+
+  const handleClickOpenDelete = () => {
+    let delete_data = window.confirm('Are you sure wants to delete this data');
+    if (delete_data) {
+      let body = {
+        id: selectedBiaya
+      };
+      client
+        .delete(`/api/biaya-tambahan`, {
+          data: body
+        })
+        .then(data => {
+          setSelectedBiaya([]);
+          dispatch({ type: 'BIAYA_TRIGGER' });
+        })
+        .catch(err => console.log(err));
+    }
+  };
+
+  const createSortHandler = property => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  const handleList = () => {
+    return search.length > 0 ? search : biaya;
   };
 
   const handleSelectOne = (event, id) => {
@@ -90,8 +170,19 @@ const Results = props => {
     setRowsPerPage(event.target.value);
   };
 
+  const activeColors = {
+    false: colors.grey[600],
+    true: colors.green[600]
+  };
   return (
     <div {...rest} className={clsx(classes.root, className)}>
+      <ModalBiaya
+        open={open}
+        url={url}
+        onEdit={onEdit}
+        title={title}
+        handleClose={() => setOpen(false)}
+      />
       <Typography color="textSecondary" gutterBottom variant="body2">
         {biaya.length} Records found. Page {page + 1} of{' '}
         {Math.ceil(biaya.length / rowsPerPage)}
@@ -116,44 +207,75 @@ const Results = props => {
                         onChange={handleSelectAll}
                       />
                     </TableCell>
-                    <TableCell>Nama Biaya</TableCell>
-                    <TableCell>Biaya Ditaksir</TableCell>
-                    <TableCell>Jadi Utama</TableCell>
-                    <TableCell>Action</TableCell>
+                    {headerTable.map(i => (
+                      <TableCell
+                        key={i.id}
+                        sortDirection={orderBy === i.id ? order : false}>
+                        <TableSortLabel
+                          active={orderBy === i.id}
+                          direction={orderBy === i.id ? order : 'asc'}
+                          onClick={() => createSortHandler(i.id)}>
+                          {i.label}
+                          {orderBy === i.id ? (
+                            <span className={classes.visuallyHidden}>
+                              {order === 'desc'
+                                ? 'sorted descending'
+                                : 'sorted ascending'}
+                            </span>
+                          ) : null}
+                        </TableSortLabel>
+                      </TableCell>
+                    ))}
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {biaya.slice(firstIndex, lastIndex).map(order => (
-                    <TableRow
-                      key={order.id}
-                      selected={selectedBiaya.indexOf(order.id) !== -1}>
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={selectedBiaya.indexOf(order.id) !== -1}
-                          color="primary"
-                          onChange={event => handleSelectOne(event, order.id)}
-                          value={selectedBiaya.indexOf(order.id) !== -1}
-                        />
-                      </TableCell>
-                      <TableCell>{order.nama}</TableCell>
-                      <TableCell>
-                        {rupiahFormat.convert(order.biaya).replace(',00', ',-')}
-                      </TableCell>
-                      <TableCell>
-                        <Switch
-                          checked={order.default}
-                          color="primary"
-                          name="aktif"
-                          inputProps={{ 'aria-label': 'primary checkbox' }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Button color="primary" variant="outlined">
-                          <EditIcon />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {stableSort(handleList(), getComparator(order, orderBy))
+                    .slice(firstIndex, lastIndex)
+                    .map(order => (
+                      <TableRow
+                        key={order.id}
+                        selected={selectedBiaya.indexOf(order.id) !== -1}>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={selectedBiaya.indexOf(order.id) !== -1}
+                            color="primary"
+                            onChange={event => handleSelectOne(event, order.id)}
+                            value={selectedBiaya.indexOf(order.id) !== -1}
+                          />
+                        </TableCell>
+                        <TableCell className={classes.capitalize}>
+                          {order.nama_biaya}
+                        </TableCell>
+                        <TableCell>
+                          {rupiahFormat
+                            .convert(order.biaya_ditaksir)
+                            .replace(',00', ',-')}
+                        </TableCell>
+                        <TableCell>
+                          <SwitchActive
+                            active={order.is_utama}
+                            id={order.id}
+                            url="/api/biaya-tambahan"
+                            trigger="BIAYA_TRIGGER"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Label color={activeColors[order.is_utama]}>
+                            {order.is_utama ? 'Utama' : 'Tidak Utama'}
+                          </Label>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            color="primary"
+                            variant="outlined"
+                            onClick={() => handleOpenEdit(order.id)}>
+                            <EditIcon />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </div>
@@ -171,7 +293,7 @@ const Results = props => {
           />
         </CardActions>
       </Card>
-      <TableEditBar selected={selectedBiaya} />
+      <TableEditBar selected={selectedBiaya} onClick={handleClickOpenDelete} />
     </div>
   );
 };

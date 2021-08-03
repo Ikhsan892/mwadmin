@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
@@ -61,6 +61,7 @@ const useStyles = makeStyles(theme => ({
 const NavBar = props => {
   const { openMobile, onMobileClose, className, ...rest } = props;
   const [cookies, removeCookie, setCookies] = useCookies(['_TuVbwpW']);
+
   const classes = useStyles();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -68,7 +69,11 @@ const NavBar = props => {
 
   const handleLogout = () => {
     dispatch(logout());
-    removeCookie('_TuVbwpW');
+    document.cookie.split(';').forEach(c => {
+      document.cookie = c
+        .replace(/^ +/, '')
+        .replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
+    });
     router.history.push('/auth/login');
   };
 
@@ -90,7 +95,7 @@ const NavBar = props => {
             alt="Person"
             className={classes.avatar}
             component={RouterLink}
-            src={session.user.avatar}
+            src={`http://localhost:3000/${session.user.avatar}`}
             to="/profile/1/timeline"
           />
         )}

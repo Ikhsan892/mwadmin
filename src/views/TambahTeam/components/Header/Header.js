@@ -14,22 +14,12 @@ const Header = props => {
   const classes = useStyles();
 
   return (
-    <div
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
-      <Typography
-        component="h2"
-        gutterBottom
-        variant="overline"
-      >
-        Social Feed
+    <div {...rest} className={clsx(classes.root, className)}>
+      <Typography component="h2" gutterBottom variant="overline">
+        Tambah Team
       </Typography>
-      <Typography
-        component="h1"
-        variant="h3"
-      >
-        Here's what your connections posted
+      <Typography component="h1" variant="h3">
+        Tambah Team Untuk Memperkuat Bisnis
       </Typography>
     </div>
   );

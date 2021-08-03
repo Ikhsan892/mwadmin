@@ -1,4 +1,4 @@
-import React, { Fragment, Suspense } from 'react';
+import React, { Fragment, Suspense, useEffect } from 'react';
 import { renderRoutes } from 'react-router-config';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
@@ -18,6 +18,14 @@ const useStyles = makeStyles(theme => ({
 const Auth = props => {
   const { route } = props;
   const classes = useStyles();
+
+  useEffect(() => {
+    document.cookie.split(';').forEach(c => {
+      document.cookie = c
+        .replace(/^ +/, '')
+        .replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
+    });
+  }, []);
   return (
     <Fragment>
       <Topbar />

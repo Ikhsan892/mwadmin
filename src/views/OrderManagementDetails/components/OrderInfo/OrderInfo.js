@@ -69,20 +69,20 @@ const OrderInfo = props => {
               <TableCell>Pelanggan</TableCell>
               <TableCell>
                 <Link component={RouterLink} to="/management/customers/1">
-                  {order.customer.name}
+                  {order.pelanggan.nama_depan} {order.pelanggan.nama_belakang}
                 </Link>
-                <div>{order.customer.address}</div>
-                <div>{order.customer.city}</div>
-                <div>{order.customer.country}</div>
+                <div>{order.pelanggan.alamat}</div>
+                <div>{order.pelanggan.kota_kabupaten}</div>
+                <div>{order.pelanggan.negara}</div>
               </TableCell>
             </TableRow>
             <TableRow selected>
               <TableCell>ID</TableCell>
-              <TableCell>#{order.id.split('-').shift()}</TableCell>
+              <TableCell>#{order.id}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>No Invoice</TableCell>
-              <TableCell>{order.ref}</TableCell>
+              <TableCell>{order.no_invoice}</TableCell>
             </TableRow>
             <TableRow selected>
               <TableCell>Tanggal Dibuat</TableCell>
@@ -90,7 +90,7 @@ const OrderInfo = props => {
                 {moment(order.created_at).format('DD/MM/YYYY HH:MM')}
               </TableCell>
             </TableRow>
-            <TableRow>
+            {/* <TableRow>
               <TableCell>Tanggal Jatuh Tempo</TableCell>
               <TableCell>
                 {moment(order.created_at).format('DD/MM/YYYY HH:MM')}
@@ -102,7 +102,7 @@ const OrderInfo = props => {
                 {order.currency}
                 {order.value}
               </TableCell>
-            </TableRow>
+            </TableRow> 
             <TableRow>
               <TableCell>Status Pembayaran</TableCell>
               <TableCell>
@@ -122,7 +122,7 @@ const OrderInfo = props => {
                   ))}
                 </TextField>
               </TableCell>
-            </TableRow>
+            </TableRow> */}
           </TableBody>
         </Table>
       </CardContent>

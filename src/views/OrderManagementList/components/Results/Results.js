@@ -142,7 +142,6 @@ const Results = props => {
                     <TableCell>No Invoice</TableCell>
                     <TableCell>Pelanggan</TableCell>
                     <TableCell>Metode Pembayaran</TableCell>
-                    <TableCell>Total</TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell align="right">Actions</TableCell>
                   </TableRow>
@@ -163,29 +162,22 @@ const Results = props => {
                       <TableCell>
                         {/* {order.payment.ref} */}
                         <Typography variant="body2">
-                          {moment(order.created_at).format(
+                          {moment(order.tanggal_invoice).format(
                             'DD MMM YYYY | hh:mm'
                           )}
                         </Typography>
                       </TableCell>
-                      <TableCell>{order.no_resi}</TableCell>
+                      <TableCell>{order.no_invoice}</TableCell>
                       <TableCell>
-                        {order.customer.nama_depan}{' '}
-                        {order.customer.nama_belakang}
+                        {order.pelanggan.nama_depan}{' '}
+                        {order.pelanggan.nama_belakang}
                       </TableCell>
-                      <TableCell>
-                        {order.metode_pembayaran.nama_metode_pembayaran}
-                      </TableCell>
-                      <TableCell>{handleTotalSummary(order)}</TableCell>
+                      <TableCell>{order.payment?.name_payment}</TableCell>
                       <TableCell>
                         <Label
-                          color={
-                            paymentStatusColors[
-                              order.status_pembayaran.nama_status_pembayaran
-                            ]
-                          }
+                          color={paymentStatusColors[order.status]}
                           variant="outlined">
-                          {order.status_pembayaran.nama_status_pembayaran}
+                          {order.status}
                         </Label>
                       </TableCell>
                       <TableCell align="right">

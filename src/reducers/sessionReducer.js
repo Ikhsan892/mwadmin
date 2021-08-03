@@ -12,7 +12,8 @@ const initialState = {
     email: '---',
     avatar: '/images/avatars/profil.jpeg',
     bio: '---',
-    role: 'ADMIN' // ['GUEST', 'USER', 'ADMIN']
+    role: 'ADMIN', // ['GUEST', 'USER', 'ADMIN']
+    menu: []
   }
 };
 
@@ -28,9 +29,10 @@ const sessionReducer = (state = initialState, action) => {
           first_name: action.data.firstName,
           last_name: action.data.lastName,
           email: action.data.email,
-          // avatar: action.data.profile_image,
-          bio: action.data.role.nama_role ? action.data.role.nama_role : '-',
-          role: action.data.role.nama_role.toUpperCase()
+          avatar: action.data.avatar,
+          bio: action.data.role ? action.data.role : '-',
+          role: action.data.role.toUpperCase(),
+          menu: action.data.menu
         }
       };
     }
@@ -42,7 +44,8 @@ const sessionReducer = (state = initialState, action) => {
         token: '',
         status: 0,
         user: {
-          role: 'GUEST'
+          role: 'GUEST',
+          menu: []
         }
       };
     }

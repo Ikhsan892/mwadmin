@@ -133,15 +133,20 @@ const routes = [
         exact: true,
         component: lazy(() => import('views/OrderManagementList'))
       },
-      {
-        path: '/management/orders/create',
-        exact: true,
-        component: lazy(() => import('views/OrderManagementCreate'))
-      },
+      // {
+      //   path: '/management/orders/create',
+      //   exact: true,
+      //   component: lazy(() => import('views/OrderManagementCreate'))
+      // },
       {
         path: '/management/orders/:id',
         exact: true,
         component: lazy(() => import('views/OrderManagementDetails'))
+      },
+      {
+        path: '/barang/new-request',
+        exact: true,
+        component: lazy(() => import('views/OrderManagementCreate'))
       },
       {
         path: '/pengaturan/pembayaran',
@@ -194,6 +199,16 @@ const routes = [
         component: lazy(() => import('views/ProjectList'))
       },
       {
+        path: '/role',
+        exact: true,
+        component: lazy(() => import('views/Role'))
+      },
+      {
+        path: '/role/add-role',
+        exact: true,
+        component: lazy(() => import('views/Role/components/RoleForm'))
+      },
+      {
         path: '/settings',
         exact: true,
         component: lazy(() => import('views/Settings'))
@@ -204,9 +219,9 @@ const routes = [
         component: lazy(() => import('views/Settings'))
       },
       {
-        path: '/social-feed',
+        path: '/tambah-team',
         exact: true,
-        component: lazy(() => import('views/SocialFeed'))
+        component: lazy(() => import('views/TambahTeam'))
       },
       {
         path: '/getting-started',

@@ -19,8 +19,8 @@ const OrderManagementList = () => {
   const [orders, setOrders] = useState([]);
 
   const handleFetchOrder = async () => {
-    let response = await axios.get('/api/invoice/admin');
-    setOrders(response.data.resi);
+    let response = await axios.get('/api/order');
+    setOrders(response.data);
   };
 
   useEffect(() => {
