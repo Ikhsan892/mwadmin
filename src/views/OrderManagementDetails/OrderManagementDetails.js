@@ -50,16 +50,16 @@ const OrderManagementDetails = props => {
         <Grid item md={4} xl={3} xs={12}>
           <OrderInfo order={order} />
         </Grid>
-        {/* <Grid item md={8} xl={9} xs={12}>
+        <Grid item md={8} xl={9} xs={12}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <OrderItems order={order} />
+              <OrderItems barang={[]} />
             </Grid>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <OrderAddons order={order} />
-            </Grid>
+            </Grid> */}
           </Grid>
-        </Grid> */}
+        </Grid>
       </Grid>
     </Page>
   );

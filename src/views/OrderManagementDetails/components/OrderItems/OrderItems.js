@@ -13,7 +13,8 @@ import {
   TableHead,
   TableBody,
   TableRow,
-  TableCell
+  TableCell,
+  Checkbox
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 const useStyles = makeStyles(() => ({
@@ -27,20 +28,22 @@ const useStyles = makeStyles(() => ({
 }));
 
 const OrderItems = props => {
-  const { order, className, ...rest } = props;
+  const { barang, className, ...rest } = props;
 
   const classes = useStyles();
+  const [selectedBarang, setSelectedBarang] = React.useState([]);
+
+  const handleSelectAll = event => {
+    const selectedBarang = event.target.checked
+      ? barang.map(barang => barang.id)
+      : [];
+
+    setSelectedBarang(selectedBarang);
+  };
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
-      <CardHeader
-        title="List Barang dan Sparepart"
-        action={
-          <IconButton>
-            <EditIcon />
-          </IconButton>
-        }
-      />
+      <CardHeader title="List Barang" />
       <Divider />
       <CardContent className={classes.content}>
         <PerfectScrollbar>
@@ -48,13 +51,25 @@ const OrderItems = props => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Barang</TableCell>
-                  <TableCell>Sparepart</TableCell>
-                  <TableCell>Harga</TableCell>
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      checked={selectedBarang.length === barang.length}
+                      color="primary"
+                      indeterminate={
+                        selectedBarang.length > 0 &&
+                        selectedBarang.length < barang.length
+                      }
+                      onChange={handleSelectAll}
+                    />
+                  </TableCell>
+                  <TableCell>Nama Barang</TableCell>
+                  <TableCell>Jenis Barang</TableCell>
+                  <TableCell>Merk</TableCell>
+                  <TableCell>Spesifikasi</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {order.items.map(item => (
+                {/* {order.items.map(item => (
                   <TableRow key={item.id}>
                     <TableCell>
                       {item.name} x {item.cuantity}
@@ -65,7 +80,7 @@ const OrderItems = props => {
                       {item.value}
                     </TableCell>
                   </TableRow>
-                ))}
+                ))} */}
               </TableBody>
             </Table>
           </div>
