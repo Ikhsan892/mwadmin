@@ -48,7 +48,7 @@ export default [
     title: 'Orderan & Pelanggan',
     pages: [
       {
-        title: 'New Request',
+        title: 'Orderan',
         href: '/barang/new-request',
         icon: ControlPointIcon
       },
@@ -67,7 +67,7 @@ export default [
           //   href: '/management/projects'
           // },
           {
-            title: 'Orderan',
+            title: 'Invoice',
             href: '/management/orders',
             label: () => <Label color={colors.blue[500]}>Allow</Label>
           }
