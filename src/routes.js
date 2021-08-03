@@ -133,11 +133,11 @@ const routes = [
         exact: true,
         component: lazy(() => import('views/OrderManagementList'))
       },
-      {
-        path: '/management/orders/create',
-        exact: true,
-        component: lazy(() => import('views/OrderManagementCreate'))
-      },
+      // {
+      //   path: '/management/orders/create',
+      //   exact: true,
+      //   component: lazy(() => import('views/OrderManagementCreate'))
+      // },
       {
         path: '/management/orders/:id',
         exact: true,
@@ -146,7 +146,7 @@ const routes = [
       {
         path: '/barang/new-request',
         exact: true,
-        component: lazy(() => import('views/NewRequests'))
+        component: lazy(() => import('views/OrderManagementCreate'))
       },
       {
         path: '/pengaturan/pembayaran',

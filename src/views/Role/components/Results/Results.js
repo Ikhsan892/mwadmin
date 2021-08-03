@@ -32,6 +32,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useDispatch } from 'react-redux';
 import client from 'utils/axios';
 import { getComparator, stableSort } from 'utils/sortable';
+import ModalEdit from '../ModalEdit';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -92,6 +93,8 @@ const Results = props => {
   const [orderBy, setOrderBy] = useState('nama_role');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openEdit, setOpenEdit] = useState(false);
+  const [features, setFeatures] = useState([]);
+  const [user, setUser] = useState('');
   const [idEdit, setIdEdit] = useState(0);
 
   const dispatch = useDispatch();
@@ -163,14 +166,18 @@ const Results = props => {
     return search.length > 0 ? search : role;
   };
 
-  const handleOpenEdit = id => {
+  const handleOpenEdit = (id, user, features) => {
     setOpenEdit(true);
+    setUser(user);
     setIdEdit(id);
+    setFeatures(features);
   };
 
   const handleCloseEdit = () => {
     setOpenEdit(false);
+    setUser('');
     setIdEdit(0);
+    setFeatures([]);
   };
 
   const activeColors = {
@@ -180,6 +187,13 @@ const Results = props => {
 
   return (
     <div {...rest} className={clsx(classes.root, className)}>
+      <ModalEdit
+        open={openEdit}
+        handleClose={handleCloseEdit}
+        user={user}
+        feature={features}
+        id={idEdit}
+      />
       <Typography color="textSecondary" gutterBottom variant="body2">
         {role.length} Records found. Page {page + 1} of{' '}
         {Math.ceil(role.length / rowsPerPage)}
@@ -273,7 +287,13 @@ const Results = props => {
                             <IconButton
                               color="primary"
                               aria-label="edit data"
-                              onClick={() => handleOpenEdit(order.id)}>
+                              onClick={() =>
+                                handleOpenEdit(
+                                  order.id,
+                                  order.nama_role,
+                                  order.menu
+                                )
+                              }>
                               <Edit />
                             </IconButton>
                           </Tooltip>

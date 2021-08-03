@@ -26,6 +26,7 @@ const CustomerForm = ({ autocomplete, ...props }) => {
       props.setFieldValue('email', newEvent.email);
       props.setFieldValue('no_telepon', newEvent.no_telepon);
       props.setFieldValue('negara', newEvent.negara);
+      props.setFieldValue('gender', newEvent.gender);
       props.setFieldValue('umur', newEvent.umur);
       props.setFieldValue('provinsi', newEvent.provinsi);
       props.setFieldValue('kota_kabupaten', newEvent.kota_kabupaten);
@@ -39,8 +40,8 @@ const CustomerForm = ({ autocomplete, ...props }) => {
 
   // fetch for autocomplete data
   const customersFetch = async () => {
-    let data = await client.get('/api/customers');
-    setCustomers(data.data);
+    let response = await client.get('/api/pelanggan');
+    setCustomers(response.data);
   };
 
   useEffect(() => {
@@ -90,7 +91,7 @@ const CustomerForm = ({ autocomplete, ...props }) => {
             value={props.values.nama_depan}
             onBlur={props.handleBlur}
             name="nama_depan"
-            disabled={adaPelanggan}
+            disabled={false}
             helperText={props.touched.nama_depan && props.errors.nama_depan}
             variant="outlined"
             fullWidth
@@ -107,7 +108,7 @@ const CustomerForm = ({ autocomplete, ...props }) => {
             error={
               props.touched.nama_belakang && Boolean(props.errors.nama_belakang)
             }
-            disabled={adaPelanggan}
+            disabled={false}
             helperText={
               props.touched.nama_belakang && props.errors.nama_belakang
             }
@@ -124,7 +125,7 @@ const CustomerForm = ({ autocomplete, ...props }) => {
             onChange={props.handleChange}
             value={props.values.email}
             error={props.touched.email && Boolean(props.errors.email)}
-            disabled={adaPelanggan}
+            disabled={false}
             onBlur={props.handleBlur}
             helperText={props.touched.email && props.errors.email}
             variant="outlined"
@@ -141,7 +142,7 @@ const CustomerForm = ({ autocomplete, ...props }) => {
             onChange={props.handleChange}
             value={props.values.no_telepon}
             error={props.touched.no_telepon && Boolean(props.errors.no_telepon)}
-            disabled={adaPelanggan}
+            disabled={false}
             helperText={props.touched.no_telepon && props.errors.no_telepon}
             variant="outlined"
             name="no_telepon"
@@ -157,7 +158,7 @@ const CustomerForm = ({ autocomplete, ...props }) => {
             onChange={props.handleChange}
             value={props.values.negara}
             error={props.touched.negara && Boolean(props.errors.negara)}
-            disabled={adaPelanggan}
+            disabled={false}
             helperText={props.touched.negara && props.errors.negara}
             variant="outlined"
             name="negara"
@@ -173,7 +174,7 @@ const CustomerForm = ({ autocomplete, ...props }) => {
             onChange={props.handleChange}
             value={props.values.umur}
             error={props.touched.umur && Boolean(props.errors.umur)}
-            disabled={adaPelanggan}
+            disabled={false}
             helperText={props.touched.umur && props.errors.umur}
             variant="outlined"
             name="umur"
@@ -218,7 +219,7 @@ const CustomerForm = ({ autocomplete, ...props }) => {
             onChange={props.handleChange}
             value={props.values.provinsi}
             error={props.touched.provinsi && Boolean(props.errors.provinsi)}
-            disabled={adaPelanggan}
+            disabled={false}
             helperText={props.touched.provinsi && props.errors.provinsi}
             variant="outlined"
             name="provinsi"
@@ -237,7 +238,7 @@ const CustomerForm = ({ autocomplete, ...props }) => {
               props.touched.kota_kabupaten &&
               Boolean(props.errors.kota_kabupaten)
             }
-            disabled={adaPelanggan}
+            disabled={false}
             helperText={
               props.touched.kota_kabupaten && props.errors.kota_kabupaten
             }
@@ -255,7 +256,7 @@ const CustomerForm = ({ autocomplete, ...props }) => {
             onChange={props.handleChange}
             value={props.values.kecamatan}
             error={props.touched.kecamatan && Boolean(props.errors.kecamatan)}
-            disabled={adaPelanggan}
+            disabled={false}
             helperText={props.touched.kecamatan && props.errors.kecamatan}
             variant="outlined"
             name="kecamatan"
@@ -273,7 +274,7 @@ const CustomerForm = ({ autocomplete, ...props }) => {
             onChange={props.handleChange}
             value={props.values.alamat}
             error={props.touched.alamat && Boolean(props.errors.alamat)}
-            disabled={adaPelanggan}
+            disabled={false}
             helperText={props.touched.alamat && props.errors.alamat}
             variant="outlined"
             name="alamat"

@@ -80,17 +80,18 @@ const Dashboard = props => {
         <main className={classes.content}>
           {isMaintain ? (
             <AuthGuard
-              roles={[
-                'SUPERADMIN',
-                'KOMISARIS',
-                'DIREKTUR',
-                'DIREKTUR_UTAMA',
-                'ADMIN',
-                'SEKRETARIS',
-                'BENDAHARA',
-                'TEKNISI',
-                'KEPALA_TEKNISI'
-              ]}>
+            // roles={[
+            //   'SUPERADMIN',
+            //   'KOMISARIS',
+            //   'DIREKTUR',
+            //   'DIREKTUR_UTAMA',
+            //   'ADMIN',
+            //   'SEKRETARIS',
+            //   'BENDAHARA',
+            //   'TEKNISI',
+            //   'KEPALA_TEKNISI'
+            // ]}>
+            >
               <Suspense fallback={<LinearProgress />}>
                 {renderRoutes(route.routesAllowed)}
               </Suspense>

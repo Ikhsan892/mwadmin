@@ -75,11 +75,12 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 function makeid(length) {
-  var result           = '';
-  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var result = '';
+  var characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   var charactersLength = characters.length;
-  for ( var i = 0; i < length; i++ ) {
-     result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
 }
@@ -91,14 +92,17 @@ const Login = () => {
   useEffect(() => {
     if (loggedIn && token) {
       setCookies('_TuVbwpW', token, { path: '/' });
-      for(let i = 0 ; i < 5 ; i++) {
-        setCookies(`_${makeid(7)}` , `${Math.floor(Math.random() * 100)}%7C${makeid(10)}`);
+      for (let i = 0; i < 5; i++) {
+        setCookies(
+          `_${makeid(7)}`,
+          `${Math.floor(Math.random() * 100)}%7C${makeid(10)}`
+        );
       }
       router.history.push('/');
-    }else{
-      router.history.push('/auth/login')
+    } else {
+      router.history.push('/auth/login');
     }
-  }, [loggedIn,token]);
+  }, [loggedIn, token]);
   return (
     <Page className={classes.root} title="Login">
       <Card className={classes.card}>

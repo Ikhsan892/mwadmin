@@ -16,7 +16,6 @@ import ReceiptIcon from '@material-ui/icons/ReceiptOutlined';
 import SettingsIcon from '@material-ui/icons/SettingsOutlined';
 import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
-import { Label } from 'components';
 
 export default [
   {

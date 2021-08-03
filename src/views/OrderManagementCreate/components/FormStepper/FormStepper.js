@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import useRouter from 'utils/useRouter';
 import CustomerForm from '../CustomerForm';
 import BarangForm from '../BarangForm';
-import PembayaranForm from '../PembayaranForm';
+// import PembayaranForm from '../PembayaranForm';
 import Snackbar from '@material-ui/core/Snackbar';
 import ModalConfirmation from '../ModalConfirmation';
 import client from 'utils/axios';
@@ -31,19 +31,19 @@ const useStyles = makeStyles(theme => ({
 function getSteps() {
   return [
     'Buat atau Pilih Pelanggan',
-    'Buat Informasi Barang',
-    'Buat Informasi Pembayaran'
+    'Buat Informasi Barang'
+    // 'Buat Informasi Pembayaran'
   ];
 }
 
 function getStepContent(stepIndex, formikProps) {
   switch (stepIndex) {
     case 0:
-      return <CustomerForm {...formikProps} />;
+      return <CustomerForm {...formikProps} autocomplete={true} />;
     case 1:
       return <BarangForm {...formikProps} />;
-    case 2:
-      return <PembayaranForm {...formikProps} />;
+    // case 2:
+    //   return <PembayaranForm {...formikProps} />;
     default:
       return 'Index Tidak Terbaca';
   }
@@ -74,11 +74,12 @@ export default function FormStepper() {
   const handleSubmit = async (isOpen, data) => {
     // setFormData(data);
     // setOpenModal(isOpen);
-    let response = await client.post('/api/invoice', data);
-    if (response.status === 201) {
-      alert(response.data.message);
-      // Jika response berhasil
-    }
+    // let response = await client.post('/api/invoice', data);
+    // if (response.status === 201) {
+    //   alert(response.data.message);
+    //   // Jika response berhasil
+    // }
+    console.log(data);
   };
 
   const OrderSchema = Yup.object().shape({
@@ -116,51 +117,23 @@ export default function FormStepper() {
       .min(5, 'Kependekan!')
       .required('Required'),
     umur: Yup.number('Harus Nomor').required('Required'),
-    barang: Yup.array().of(
-      Yup.object().shape({
-        nama_barang: Yup.string().required('required'),
-        kerusakan: Yup.array().of(
-          Yup.object().shape({
-            nama_kerusakan: Yup.string()
-              .min(3, 'Kependekan!')
-              .required('Nama Kerusakan tidak Boleh Kosong'),
-            sparepart: Yup.array().of(
-              Yup.object().shape({
-                nama_sparepart: Yup.string()
-                  .min(3, 'Kependekan!')
-                  .required('Required'),
-                harga: Yup.number().required('Required')
-              })
-            )
-          })
-        )
-      })
-    ),
     no_invoice: Yup.string()
       .required('Required')
       .matches(
         /(^MW)[0-9]{5}$/gm,
         'Invoice harus ada MW dan diikuti dengan nomor 5 digit'
       ),
-    metode_pembayaran: Yup.string().required('Required'),
-    status_pembayaran: Yup.string().required('Required'),
-    dp: Yup.number(),
-    jatuh_tempo: Yup.string(),
-    diskon: Yup.array().of(
+    tanggal_invoice: Yup.string().required('Required'),
+    barang: Yup.array().of(
       Yup.object().shape({
-        nama_diskon: Yup.string().min(3, 'Kependekan'),
-        total_diskon: Yup.number().min(3, 'Kependekan')
+        nama_barang: Yup.string().required('required'),
+        merk: Yup.string().required('required'),
+        gambar: Yup.array(),
+        jenis_barang: Yup.string().required('required'),
+        spesifikasi: Yup.string().required('required'),
+        keluhan: Yup.string().required('required')
       })
-    ),
-    biaya_tambahan: Yup.array().of(
-      Yup.object().shape({
-        nama_biaya: Yup.string().required('Required'),
-        total_biaya: Yup.number().required('Required')
-      })
-    ),
-    pengiriman: Yup.string().required('Required'),
-    garansi: Yup.string(),
-    ongkir: Yup.number().required('Required')
+    )
   });
 
   return (
@@ -207,43 +180,18 @@ export default function FormStepper() {
                   kota_kabupaten: '',
                   kecamatan: '',
                   alamat: '',
+                  no_invoice: '',
+                  tanggal_invoice: '',
                   barang: [
                     {
                       nama_barang: '',
-                      kerusakan: [
-                        {
-                          nama_kerusakan: '',
-                          sparepart: [
-                            {
-                              nama_sparepart: '',
-                              harga: ''
-                            }
-                          ]
-                        }
-                      ]
+                      merk: '',
+                      jenis_barang: '',
+                      spesifikasi: '',
+                      gambar: [],
+                      keluhan: ''
                     }
-                  ],
-                  no_invoice: '',
-                  metode_pembayaran: '',
-                  status_pembayaran: '',
-                  dp: '',
-                  jatuh_tempo: '',
-                  diskon: [
-                    {
-                      nama_diskon: '',
-                      total_diskon: ''
-                    }
-                  ],
-                  biaya_tambahan: [
-                    {
-                      nama_biaya: '',
-                      total_biaya: 0
-                    }
-                  ],
-                  pengiriman: '',
-                  ongkir: '',
-                  garansi: '',
-                  note: ''
+                  ]
                 }}
                 validationSchema={OrderSchema}
                 onSubmit={values => handleSubmit(true, values)}
@@ -260,21 +208,21 @@ export default function FormStepper() {
                           disabled={activeStep === 0}
                           onClick={handleBack}
                           className={classes.backButton}>
-                          Back
+                          Kembali
                         </Button>
                         {activeStep === steps.length - 1 ? (
                           <Button
                             variant="contained"
                             color="primary"
                             type="submit">
-                            Submit
+                            Kirim
                           </Button>
                         ) : (
                           <Button
                             variant="contained"
                             color="primary"
                             onClick={handleNext}>
-                            Next
+                            Selanjutnya
                           </Button>
                         )}
                       </div>

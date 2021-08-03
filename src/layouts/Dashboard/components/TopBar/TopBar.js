@@ -22,7 +22,7 @@ import useRouter from 'utils/useRouter';
 import { useSelector } from 'react-redux';
 import { NotificationsPopover } from 'components';
 import { logout } from 'actions';
-import { useCookies } from 'react-cookie'
+import { useCookies } from 'react-cookie';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -70,7 +70,7 @@ const TopBar = props => {
   const [notifications, setNotifications] = useState([]);
   const [openNotifications, setOpenNotifications] = useState(false);
   const { isMaintain } = useSelector(state => state.maintained);
-  const [ cookies, setCookies ,removeCookie ] = useCookies(['_TuVbwpW'])
+  const [cookies, setCookies, removeCookie] = useCookies(['_TuVbwpW']);
 
   useEffect(() => {
     let mounted = true;
@@ -92,7 +92,11 @@ const TopBar = props => {
 
   const handleLogout = () => {
     dispatch(logout());
-    removeCookie('_TuVbwpW')
+    document.cookie.split(';').forEach(c => {
+      document.cookie = c
+        .replace(/^ +/, '')
+        .replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
+    });
     history.push('/auth/login');
   };
 

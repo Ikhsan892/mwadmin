@@ -2,15 +2,29 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
-import { Link } from 'react-router-dom';
-import { Grid, Typography, Button } from '@material-ui/core';
+import { Typography, Grid, colors } from '@material-ui/core';
 
-const useStyles = makeStyles(() => ({
-  root: {}
+const useStyles = makeStyles(theme => ({
+  root: {},
+  toolbar: {
+    '& > * + *': {
+      marginLeft: theme.spacing(1)
+    }
+  },
+  deleteButton: {
+    color: theme.palette.white,
+    backgroundColor: colors.red[600],
+    '&:hover': {
+      backgroundColor: colors.red[900]
+    }
+  },
+  deleteIcon: {
+    marginRight: theme.spacing(1)
+  }
 }));
 
 const Header = props => {
-  const { className, ...rest } = props;
+  const { order, className, ...rest } = props;
 
   const classes = useStyles();
 
@@ -19,20 +33,11 @@ const Header = props => {
       <Grid alignItems="flex-end" container justify="space-between" spacing={3}>
         <Grid item>
           <Typography component="h2" gutterBottom variant="overline">
-            Manajemen
+            Buat orderan baru
           </Typography>
           <Typography component="h1" variant="h3">
-            Orderan
+            New Request
           </Typography>
-        </Grid>
-        <Grid item>
-          <Button
-            color="primary"
-            variant="contained"
-            to="/barang/new-request"
-            component={Link}>
-            Buat Orderan
-          </Button>
         </Grid>
       </Grid>
     </div>
@@ -40,7 +45,8 @@ const Header = props => {
 };
 
 Header.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  order: PropTypes.object.isRequired
 };
 
 export default Header;

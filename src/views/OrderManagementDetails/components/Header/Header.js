@@ -37,7 +37,7 @@ const Header = props => {
             Orderan
           </Typography>
           <Typography component="h1" variant="h3">
-            Order #{order.id.split('-').shift()}
+            Order #{order.id}
           </Typography>
         </Grid>
         <Grid item>

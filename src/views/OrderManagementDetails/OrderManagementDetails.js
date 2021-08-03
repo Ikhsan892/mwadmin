@@ -15,17 +15,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const OrderManagementDetails = () => {
+const OrderManagementDetails = props => {
+  const { match, history } = props;
   const classes = useStyles();
   const [order, setOrder] = useState(null);
+  const { id } = match.params;
 
   useEffect(() => {
     let mounted = true;
 
     const fetchOrder = () => {
-      axios.get('/api/orders/1').then(response => {
+      axios.get(`/api/order/${id}`).then(response => {
         if (mounted) {
-          setOrder(response.data.order);
+          setOrder(response.data);
         }
       });
     };
@@ -38,7 +40,7 @@ const OrderManagementDetails = () => {
   }, []);
 
   if (!order) {
-    return null;
+    return <div>Kosong brodi</div>;
   }
 
   return (
@@ -48,7 +50,7 @@ const OrderManagementDetails = () => {
         <Grid item md={4} xl={3} xs={12}>
           <OrderInfo order={order} />
         </Grid>
-        <Grid item md={8} xl={9} xs={12}>
+        {/* <Grid item md={8} xl={9} xs={12}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <OrderItems order={order} />
@@ -57,7 +59,7 @@ const OrderManagementDetails = () => {
               <OrderAddons order={order} />
             </Grid>
           </Grid>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Page>
   );
