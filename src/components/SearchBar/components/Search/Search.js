@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
@@ -34,8 +34,15 @@ const Search = props => {
   const [input, setInput] = React.useState('');
   const classes = useStyles();
 
+  const onSearching = useCallback(
+    evt => {
+      onSearch(evt, input);
+    },
+    [input]
+  );
+
   return (
-    <form onSubmit={evt => onSearch(evt, input)}>
+    <form onSubmit={evt => onSearching(evt)}>
       <div {...rest} className={clsx(classes.root, className)}>
         <Paper className={classes.search} elevation={1}>
           <SearchIcon className={classes.searchIcon} />
@@ -63,4 +70,4 @@ Search.propTypes = {
   onSearch: PropTypes.func
 };
 
-export default Search;
+export default React.memo(Search);

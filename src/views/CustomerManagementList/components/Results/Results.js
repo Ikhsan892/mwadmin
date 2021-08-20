@@ -247,7 +247,7 @@ const Results = props => {
                             <Link
                               color="inherit"
                               component={RouterLink}
-                              to="/management/customers/1"
+                              to={`/management/customers/${customer.id}`}
                               variant="h6">
                               {customer.nama_depan} {customer.nama_belakang}
                             </Link>

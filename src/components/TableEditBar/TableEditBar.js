@@ -34,6 +34,8 @@ const TableEditBar = props => {
     ...rest
   } = props;
 
+  console.log('Render Table Edit Bar');
+
   const classes = useStyles();
   const open = selected.length > 0;
 
@@ -43,35 +45,17 @@ const TableEditBar = props => {
       open={open}
       // eslint-disable-next-line react/jsx-sort-props
       PaperProps={{ elevation: 1 }}
-      variant="persistent"
-    >
-      <div
-        {...rest}
-        className={clsx(classes.root, className)}
-      >
-        <Grid
-          alignItems="center"
-          container
-          spacing={2}
-        >
+      variant="persistent">
+      <div {...rest} className={clsx(classes.root, className)}>
+        <Grid alignItems="center" container spacing={2}>
           <Hidden smDown>
-            <Grid
-              item
-              md={3}
-            >
-              <Typography
-                color="textSecondary"
-                variant="subtitle1"
-              >
+            <Grid item md={3}>
+              <Typography color="textSecondary" variant="subtitle1">
                 {selected.length} selected
               </Typography>
             </Grid>
           </Hidden>
-          <Grid
-            item
-            md={6}
-            xs={12}
-          >
+          <Grid item md={6} xs={12}>
             <div className={classes.actions}>
               {/* <Button onClick={onMarkPaid}>
                 <CheckIcon className={classes.buttonIcon} />
@@ -101,4 +85,4 @@ TableEditBar.propTypes = {
   selected: PropTypes.array.isRequired
 };
 
-export default TableEditBar;
+export default React.memo(TableEditBar);

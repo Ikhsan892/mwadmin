@@ -5,7 +5,8 @@ const initialState = {
   payment_inserted: false,
   biaya_triggered: false,
   pengiriman_triggered: false,
-  role_triggered: false
+  role_triggered: false,
+  barang_triggered: false
 };
 
 const triggerReducer = (state = initialState, action) => {
@@ -14,6 +15,13 @@ const triggerReducer = (state = initialState, action) => {
       return {
         ...state,
         pelanggan_inserted: !state.pelanggan_inserted
+      };
+    }
+
+    case actionTypes.BARANG_TRIGGER: {
+      return {
+        ...state,
+        barang_triggered: !state.barang_triggered
       };
     }
 

@@ -15,10 +15,17 @@ import BarangForm from '../BarangForm';
 
 const useStyles = makeStyles(theme => ({}));
 
-export default function ModalFormBarang({ open, handleClose, title }) {
+export default function ModalFormBarang({
+  open,
+  order,
+  handleClose,
+  title,
+  action = 'add'
+}) {
   /**
    * List of States
    */
+  const [progress, setProgress] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
   const formikRef = React.useRef(null);
 
@@ -31,6 +38,7 @@ export default function ModalFormBarang({ open, handleClose, title }) {
   const resetForm = () => {
     formikRef.current.setFieldValue('nama_barang', '');
     formikRef.current.setFieldValue('gambar', []);
+    formikRef.current.setFieldValue('teknisi', []);
     formikRef.current.setFieldValue('merk', '');
     formikRef.current.setFieldValue('spesifikasi', '');
     formikRef.current.setFieldValue('keluhan', '');
@@ -38,37 +46,53 @@ export default function ModalFormBarang({ open, handleClose, title }) {
   };
 
   /**
-   * Handle Submit Add New Payment
+   * Handle Submit Add New Barang
    */
   const handleSubmit = values => {
-    console.log(values);
-    resetForm();
-    // setLoading(true);
-    // let formData = new FormData();
-    // for (var key in values) {
-    //   formData.append(`${key}`, `${values[key].toString()}`);
-    // }
-    // Array.from(values.attachment).map(i => formData.append('file', i));
-    // request
-    //   .post('/api/payment-method', formData, {
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data'
-    //     },
-    //     onUploadProgress: ev => {
-    //       const progress = Math.round((ev.loaded / ev.total) * 100);
-    //     }
-    //   })
-    //   .then(data => {
-    //     setLoading(false);
-    //     dispatch({ type: 'PAYMENT_INSERTED' });
-    //     resetForm();
-    //     handleClose();
-    //   })
-    //   .catch(err => {
-    //     alert('tidak berhasil');
-    //     console.log(err);
-    //     setLoading(false);
-    //   });
+    setLoading(true);
+    let formData = new FormData();
+    for (var key in values) {
+      if (key === 'teknisi') {
+        formData.append(`${key}`, values[key]);
+      } else if (key === 'gambar') {
+        Array.from(values.gambar).map(i => formData.append('file', i));
+      } else {
+        formData.append(`${key}`, `${values[key].toString()}`);
+      }
+    }
+    formData.append('order', order.id);
+    formData.append('status', 'inserted');
+    formData.append('pelanggan', parseInt(order.pelanggan.id));
+    if (action === 'add') {
+      request
+        .post('/api/barang', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          onUploadProgress: ev => {
+            const progress = Math.round((ev.loaded / ev.total) * 100);
+            setProgress(progress);
+          }
+        })
+        .then(response => {
+          setLoading(false);
+          if (response.data.status === 403) {
+            alert(`${response.data.status} : ${response.data.message}`);
+          } else if (
+            response.data.status === 201 ||
+            response.data.status === 200
+          ) {
+            dispatch({ type: 'BARANG_TRIGGER' });
+            resetForm();
+            handleClose();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } else if (action === 'edit') {
+      alert('edit');
+    }
   };
 
   /**
@@ -80,7 +104,8 @@ export default function ModalFormBarang({ open, handleClose, title }) {
     gambar: Yup.array(),
     jenis_barang: Yup.string().required('required'),
     spesifikasi: Yup.string().required('required'),
-    keluhan: Yup.string().required('required')
+    keluhan: Yup.string().required('required'),
+    teknisi: Yup.array().min(1, 'Teknisi Harus dipilih minimal 1')
   });
 
   return (
@@ -92,6 +117,7 @@ export default function ModalFormBarang({ open, handleClose, title }) {
         jenis_barang: '',
         spesifikasi: '',
         gambar: [],
+        teknisi: [],
         keluhan: ''
       }}
       validationSchema={BarangrSchema}
@@ -103,6 +129,7 @@ export default function ModalFormBarang({ open, handleClose, title }) {
             <Dialog
               fullWidth={true}
               maxWidth="md"
+              disableBackdropClick={true}
               open={open}
               onClose={handleClose}
               aria-labelledby="max-width-dialog-title">
@@ -122,7 +149,7 @@ export default function ModalFormBarang({ open, handleClose, title }) {
                   onClick={props.handleSubmit}
                   color="secondary"
                   variant="contained">
-                  {loading ? 'Loading' : 'Tambah'}
+                  {loading ? `Loading ${progress}%` : 'Tambah'}
                 </Button>
               </DialogActions>
             </Dialog>

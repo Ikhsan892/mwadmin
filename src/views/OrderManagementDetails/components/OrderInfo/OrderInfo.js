@@ -18,6 +18,7 @@ import {
   Link
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
+import { ComponentsGuard } from 'components';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -56,9 +57,11 @@ const OrderInfo = props => {
       <CardHeader
         title="Info Order"
         action={
-          <IconButton>
-            <EditIcon />
-          </IconButton>
+          <ComponentsGuard roles={['TEKNISI']}>
+            <IconButton>
+              <EditIcon />
+            </IconButton>
+          </ComponentsGuard>
         }
       />
       <Divider />

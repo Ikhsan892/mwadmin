@@ -82,4 +82,4 @@ SearchBar.propTypes = {
   onSearch: PropTypes.func
 };
 
-export default SearchBar;
+export default React.memo(SearchBar);

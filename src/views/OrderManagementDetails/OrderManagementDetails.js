@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Grid } from '@material-ui/core';
+import { CircularProgress, Grid } from '@material-ui/core';
 
 import axios from 'utils/axios';
 import { Page } from 'components';
 import { Header, OrderInfo, OrderItems, OrderAddons } from './components';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -18,29 +19,34 @@ const useStyles = makeStyles(theme => ({
 const OrderManagementDetails = props => {
   const { match, history } = props;
   const classes = useStyles();
+  const { barang_triggered } = useSelector(state => state.trigger);
+
   const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { id } = match.params;
 
   useEffect(() => {
-    let mounted = true;
-
-    const fetchOrder = () => {
-      axios.get(`/api/order/${id}`).then(response => {
-        if (mounted) {
-          setOrder(response.data);
-        }
-      });
+    const fetchOrder = async () => {
+      setLoading(true);
+      let response = await axios.get(`/api/order/${id}`);
+      setOrder(response.data);
+      setLoading(false);
     };
 
     fetchOrder();
+  }, [barang_triggered]);
 
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  if (!order) {
-    return <div>Kosong brodi</div>;
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+        <CircularProgress />
+      </div>
+    );
   }
 
   return (
@@ -53,7 +59,7 @@ const OrderManagementDetails = props => {
         <Grid item md={8} xl={9} xs={12}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <OrderItems barang={[]} />
+              <OrderItems barang={order.barang} order={order} />
             </Grid>
             {/* <Grid item xs={12}>
               <OrderAddons order={order} />

@@ -70,6 +70,7 @@
     "react-paginate": "^6.3.0",
     "react-perfect-scrollbar": "^1.5.3",
     "react-redux": "^7.1.0",
+    "react-responsive-carousel": "^3.2.20",
     "react-router": "^5.0.1",
     "react-router-config": "^5.0.1",
     "react-router-dom": "^5.0.1",

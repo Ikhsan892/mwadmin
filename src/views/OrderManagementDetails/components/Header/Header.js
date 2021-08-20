@@ -37,6 +37,7 @@ const Header = props => {
       <ModalFormBarang
         title="Tambah Barang"
         open={openForm}
+        order={order}
         handleClose={() => setOpenForm(false)}
       />
       <Grid alignItems="flex-end" container justify="space-between" spacing={3}>

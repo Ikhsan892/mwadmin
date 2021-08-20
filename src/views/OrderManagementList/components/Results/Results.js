@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import moment from 'moment';
@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Results = props => {
-  const { className, orders, ...rest } = props;
+  const { className, search, orders, ...rest } = props;
 
   const classes = useStyles();
 
@@ -62,6 +62,10 @@ const Results = props => {
     setSelectedOrders(selectedOrders);
   };
 
+  const handleList = useMemo(() => {
+    return search.length > 0 ? search : orders;
+  }, [search, orders]);
+
   const handleTotalSummary = order => {
     let subtotal = order.subtotal_resis.reduce(
       (init, curr) => (init += curr['nominal']),
@@ -77,25 +81,51 @@ const Results = props => {
     return summary;
   };
 
-  const handleSelectOne = (event, id) => {
-    const selectedIndex = selectedOrders.indexOf(id);
-    let newSelectedOrders = [];
+  const handleClickOpenDelete = useCallback(() => {
+    console.log(selectedOrders);
+    // let delete_data = window.confirm('Are you sure wants to delete this data');
+    // if (delete_data) {
+    //   let body = {
+    //     id: selectedMetode
+    //   };
+    //   client
+    //     .delete(`/api/payment-method`, {
+    //       data: body
+    //     })
+    //     .then(data => {
+    //       setSelectedMetode([]);
+    //       dispatch({ type: 'PAYMENT_INSERTED' });
+    //     })
+    //     .catch(err => console.log(err));
+    // }
+  }, [selectedOrders]);
 
-    if (selectedIndex === -1) {
-      newSelectedOrders = newSelectedOrders.concat(selectedOrders, id);
-    } else if (selectedIndex === 0) {
-      newSelectedOrders = newSelectedOrders.concat(selectedOrders.slice(1));
-    } else if (selectedIndex === selectedOrders.length - 1) {
-      newSelectedOrders = newSelectedOrders.concat(selectedOrders.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelectedOrders = newSelectedOrders.concat(
-        selectedOrders.slice(0, selectedIndex),
-        selectedOrders.slice(selectedIndex + 1)
-      );
-    }
+  const handleSelectOne = useCallback(
+    (event, id) => {
+      const selectedIndex = selectedOrders.indexOf(id);
+      let newSelectedOrders = [];
 
-    setSelectedOrders(newSelectedOrders);
-  };
+      if (selectedIndex === -1) {
+        newSelectedOrders = newSelectedOrders.concat(selectedOrders, id);
+      } else if (selectedIndex === 0) {
+        newSelectedOrders = newSelectedOrders.concat(selectedOrders.slice(1));
+      } else if (selectedIndex === selectedOrders.length - 1) {
+        newSelectedOrders = newSelectedOrders.concat(
+          selectedOrders.slice(0, -1)
+        );
+      } else if (selectedIndex > 0) {
+        newSelectedOrders = newSelectedOrders.concat(
+          selectedOrders.slice(0, selectedIndex),
+          selectedOrders.slice(selectedIndex + 1)
+        );
+      }
+
+      setSelectedOrders(newSelectedOrders);
+    },
+    [selectedOrders]
+  );
+
+  console.log('Render Results Orders');
 
   const handleChangePage = (event, page) => {
     setPage(page);
@@ -147,7 +177,7 @@ const Results = props => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {orders.slice(firstIndex, lastIndex).map(order => (
+                  {handleList.slice(firstIndex, lastIndex).map(order => (
                     <TableRow
                       key={order.id}
                       selected={selectedOrders.indexOf(order.id) !== -1}>
@@ -209,7 +239,10 @@ const Results = props => {
           />
         </CardActions>
       </Card>
-      <TableEditBar selected={selectedOrders} />
+      <TableEditBar
+        selected={selectedOrders}
+        onDelete={handleClickOpenDelete}
+      />
     </div>
   );
 };
@@ -223,4 +256,4 @@ Results.defaultProps = {
   orders: []
 };
 
-export default Results;
+export default React.memo(Results);
