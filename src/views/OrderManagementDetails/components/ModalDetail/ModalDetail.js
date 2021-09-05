@@ -176,7 +176,7 @@ const ModalDetail = ({ open, handleClose, id, title }) => {
                           <Grid container spacing={2}>
                             {data.teknisi && data.teknisi.length > 0
                               ? data.teknisi.map((item, index) => (
-                                  <Grid item xs={3} key={index}>
+                                  <Grid item xs={6} md={3} key={index}>
                                     <Card className={classes.teknisiCard}>
                                       <CardContent>
                                         <Grid container spacing={2}>

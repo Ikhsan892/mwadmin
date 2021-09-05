@@ -32,7 +32,6 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useDispatch } from 'react-redux';
 import client from 'utils/axios';
 import { getComparator, stableSort } from 'utils/sortable';
-import ModalEdit from '../ModalEdit';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -70,24 +69,28 @@ const useStyles = makeStyles(theme => ({
 const headerTable = [
   {
     id: 'nama_role',
-    label: 'Nama Role'
+    label: 'Nama Barang'
   },
   {
     id: 'nama_role',
-    label: 'Linked User'
+    label: 'Harga Beli'
   },
   {
     id: 'previlleges',
-    label: 'Previlleges'
+    label: 'Harga Jual'
+  },
+  {
+    id: 'previlleges',
+    label: 'Stok'
   }
 ];
 
 const Results = props => {
-  const { className, role, search, ...rest } = props;
+  const { className, inventory, search, ...rest } = props;
 
   const classes = useStyles();
 
-  const [selectedRole, setSelectedRole] = useState([]);
+  const [selectedInventory, setselectedInventory] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('nama_role');
@@ -98,13 +101,19 @@ const Results = props => {
   const [idEdit, setIdEdit] = useState(0);
 
   const dispatch = useDispatch();
-  const firstIndex = page * rowsPerPage;
-  const lastIndex = page * rowsPerPage + rowsPerPage;
+  const firstIndex = useMemo(() => {
+    return page * rowsPerPage;
+  }, [page]);
+  const lastIndex = useMemo(() => {
+    return page * rowsPerPage + rowsPerPage;
+  }, [page, rowsPerPage]);
 
   const handleSelectAll = event => {
-    const selectedRole = event.target.checked ? role.map(m => m.id) : [];
+    const selectedInventory = event.target.checked
+      ? inventory.map(m => m.id)
+      : [];
 
-    setSelectedRole(selectedRole);
+    setselectedInventory(selectedInventory);
   };
 
   const createSortHandler = property => {
@@ -117,14 +126,14 @@ const Results = props => {
     let delete_data = window.confirm('Are you sure wants to delete this data');
     if (delete_data) {
       let body = {
-        id: selectedRole
+        id: selectedInventory
       };
       client
         .delete(`/api/role`, {
           data: body
         })
         .then(data => {
-          setSelectedRole([]);
+          setselectedInventory([]);
           dispatch({ type: 'ROLE_TRIGGER' });
         })
         .catch(err => {
@@ -135,23 +144,27 @@ const Results = props => {
   };
 
   const handleSelectOne = (event, id) => {
-    const selectedIndex = selectedRole.indexOf(id);
-    let newSelectedRole = [];
+    const selectedIndex = selectedInventory.indexOf(id);
+    let newselectedInventory = [];
 
     if (selectedIndex === -1) {
-      newSelectedRole = newSelectedRole.concat(selectedRole, id);
+      newselectedInventory = newselectedInventory.concat(selectedInventory, id);
     } else if (selectedIndex === 0) {
-      newSelectedRole = newSelectedRole.concat(selectedRole.slice(1));
-    } else if (selectedIndex === selectedRole.length - 1) {
-      newSelectedRole = newSelectedRole.concat(selectedRole.slice(0, -1));
+      newselectedInventory = newselectedInventory.concat(
+        selectedInventory.slice(1)
+      );
+    } else if (selectedIndex === selectedInventory.length - 1) {
+      newselectedInventory = newselectedInventory.concat(
+        selectedInventory.slice(0, -1)
+      );
     } else if (selectedIndex > 0) {
-      newSelectedRole = newSelectedRole.concat(
-        selectedRole.slice(0, selectedIndex),
-        selectedRole.slice(selectedIndex + 1)
+      newselectedInventory = newselectedInventory.concat(
+        selectedInventory.slice(0, selectedIndex),
+        selectedInventory.slice(selectedIndex + 1)
       );
     }
 
-    setSelectedRole(newSelectedRole);
+    setselectedInventory(newselectedInventory);
   };
 
   const handleChangePage = (event, page) => {
@@ -163,8 +176,8 @@ const Results = props => {
   };
 
   const handleList = useMemo(() => {
-    return search.length > 0 ? search : role;
-  }, [search, role]);
+    return search.length > 0 ? search : inventory;
+  }, [search, inventory]);
 
   const handleOpenEdit = (id, user, features) => {
     setOpenEdit(true);
@@ -189,19 +202,19 @@ const Results = props => {
 
   return (
     <div {...rest} className={clsx(classes.root, className)}>
-      <ModalEdit
+      {/* <ModalEdit
         open={openEdit}
         handleClose={handleCloseEdit}
         user={user}
         feature={features}
         id={idEdit}
-      />
+      /> */}
       <Typography color="textSecondary" gutterBottom variant="body2">
-        {role.length} Records found. Page {page + 1} of{' '}
-        {Math.ceil(role.length / rowsPerPage)}
+        {inventory.length} Records found. Page {page + 1} of{' '}
+        {Math.ceil(inventory.length / rowsPerPage)}
       </Typography>
       <Card>
-        <CardHeader action={<GenericMoreButton />} title="List Role" />
+        <CardHeader action={<GenericMoreButton />} title="List Inventory" />
         <Divider />
         <CardContent className={classes.content}>
           <PerfectScrollbar>
@@ -211,11 +224,11 @@ const Results = props => {
                   <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox
-                        checked={selectedRole.length === role.length}
+                        checked={selectedInventory.length === inventory.length}
                         color="primary"
                         indeterminate={
-                          selectedRole.length > 0 &&
-                          selectedRole.length < role.length
+                          selectedInventory.length > 0 &&
+                          selectedInventory.length < inventory.length
                         }
                         onChange={handleSelectAll}
                       />
@@ -249,16 +262,18 @@ const Results = props => {
                     .map(order => (
                       <TableRow
                         key={order.id}
-                        selected={selectedRole.indexOf(order.id) !== -1}>
+                        selected={selectedInventory.indexOf(order.id) !== -1}>
                         <TableCell padding="checkbox">
                           {order.user.length < 1 ? (
                             <Checkbox
-                              checked={selectedRole.indexOf(order.id) !== -1}
+                              checked={
+                                selectedInventory.indexOf(order.id) !== -1
+                              }
                               color="primary"
                               onChange={event =>
                                 handleSelectOne(event, order.id)
                               }
-                              value={selectedRole.indexOf(order.id) !== -1}
+                              value={selectedInventory.indexOf(order.id) !== -1}
                             />
                           ) : (
                             ''
@@ -310,7 +325,7 @@ const Results = props => {
         <CardActions className={classes.actions}>
           <TablePagination
             component="div"
-            count={role.length}
+            count={inventory.length}
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
             page={page}
@@ -319,7 +334,10 @@ const Results = props => {
           />
         </CardActions>
       </Card>
-      <TableEditBar selected={selectedRole} onClick={handleClickOpenDelete} />
+      <TableEditBar
+        selected={selectedInventory}
+        onClick={handleClickOpenDelete}
+      />
     </div>
   );
 };

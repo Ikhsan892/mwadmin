@@ -2,15 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
-import { Link } from 'react-router-dom';
-import { Grid, Typography, Button } from '@material-ui/core';
+import { Typography, Grid, Fab } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
+import useRouter from 'utils/useRouter';
 
-const useStyles = makeStyles(() => ({
-  root: {}
+const useStyles = makeStyles(theme => ({
+  root: {},
+  addIcon: {
+    marginRight: theme.spacing(1)
+  }
 }));
 
 const Header = props => {
   const { className, ...rest } = props;
+
+  const router = useRouter();
 
   const classes = useStyles();
 
@@ -22,17 +28,14 @@ const Header = props => {
             Manajemen
           </Typography>
           <Typography component="h1" variant="h3">
-            Orderan
+            {props.title}
           </Typography>
         </Grid>
         <Grid item>
-          <Button
-            color="primary"
-            variant="contained"
-            to="/barang/new-request"
-            component={Link}>
-            Buat Orderan
-          </Button>
+          <Fab variant="extended" size="medium" color="primary">
+            <AddIcon className={classes.addIcon} />
+            Tambah Barang
+          </Fab>
         </Grid>
       </Grid>
     </div>
@@ -43,4 +46,4 @@ Header.propTypes = {
   className: PropTypes.string
 };
 
-export default React.memo(Header);
+export default Header;

@@ -99,6 +99,16 @@ const routes = [
         component: lazy(() => import('views/InvoiceDetails'))
       },
       {
+        path: '/inventory/tambah',
+        exact: true,
+        component: lazy(() => import('views/TambahInventory'))
+      },
+      {
+        path: '/inventory/list',
+        exact: true,
+        component: lazy(() => import('views/Inventory'))
+      },
+      {
         path: '/kanban-board',
         exact: true,
         component: lazy(() => import('views/KanbanBoard'))
@@ -133,11 +143,6 @@ const routes = [
         exact: true,
         component: lazy(() => import('views/OrderManagementList'))
       },
-      // {
-      //   path: '/management/orders/create',
-      //   exact: true,
-      //   component: lazy(() => import('views/OrderManagementCreate'))
-      // },
       {
         path: '/management/orders/:id',
         exact: true,
@@ -312,6 +317,11 @@ const routes = [
         path: '/management/orders/:id',
         exact: true,
         component: lazy(() => import('views/OrderManagementDetails'))
+      },
+      {
+        path: '/management/inventory',
+        exact: true,
+        component: lazy(() => import('views/Inventory'))
       },
       {
         path: '/barang/new-request',

@@ -6,7 +6,8 @@ const initialState = {
   biaya_triggered: false,
   pengiriman_triggered: false,
   role_triggered: false,
-  barang_triggered: false
+  barang_triggered: false,
+  order_triggered: false
 };
 
 const triggerReducer = (state = initialState, action) => {
@@ -22,6 +23,13 @@ const triggerReducer = (state = initialState, action) => {
       return {
         ...state,
         barang_triggered: !state.barang_triggered
+      };
+    }
+
+    case actionTypes.ORDER_TRIGGER: {
+      return {
+        ...state,
+        order_triggered: !state.order_triggered
       };
     }
 

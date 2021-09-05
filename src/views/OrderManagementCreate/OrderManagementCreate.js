@@ -76,17 +76,17 @@ const OrderSchema = Yup.object().shape({
       /(^MW)[0-9]{5}$/gm,
       'Invoice harus ada MW dan diikuti dengan nomor 5 digit'
     ),
-  tanggal_invoice: Yup.string().required('Required'),
-  barang: Yup.array().of(
-    Yup.object().shape({
-      nama_barang: Yup.string().required('required'),
-      merk: Yup.string().required('required'),
-      gambar: Yup.array(),
-      jenis_barang: Yup.string().required('required'),
-      spesifikasi: Yup.string().required('required'),
-      keluhan: Yup.string().required('required')
-    })
-  )
+  tanggal_invoice: Yup.string().required('Required')
+  // barang: Yup.array().of(
+  //   Yup.object().shape({
+  //     nama_barang: Yup.string().required('required'),
+  //     merk: Yup.string().required('required'),
+  //     gambar: Yup.array(),
+  //     jenis_barang: Yup.string().required('required'),
+  //     spesifikasi: Yup.string().required('required'),
+  //     keluhan: Yup.string().required('required')
+  //   })
+  // )
 });
 const OrderManagementCreate = () => {
   const classes = useStyles();
@@ -130,6 +130,7 @@ const OrderManagementCreate = () => {
             provinsi: '',
             kota_kabupaten: '',
             kecamatan: '',
+            tipe: 'service',
             alamat: '',
             no_invoice: '',
             tanggal_invoice: ''

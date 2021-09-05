@@ -49,11 +49,15 @@ export default function ModalAddCustomer({ open, handleClose, title }) {
     setLoading(true);
     request
       .post('/api/pelanggan', values)
-      .then(data => {
+      .then(response => {
         setLoading(false);
-        dispatch({ type: 'PELANGGAN_INSERTED' });
-        resetForm();
-        handleClose();
+        if (response.data?.status !== 201) {
+          alert(response.data?.message);
+        } else {
+          dispatch({ type: 'PELANGGAN_INSERTED' });
+          resetForm();
+          handleClose();
+        }
       })
       .catch(err => {
         alert('tidak berhasil');

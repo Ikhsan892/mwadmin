@@ -1,5 +1,5 @@
 import { Field } from 'formik';
-import { Button, Grid } from '@material-ui/core';
+import { Button, Card, CardContent, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { TextField } from 'formik-material-ui';
 import React from 'react';
@@ -7,6 +7,20 @@ import React from 'react';
 const useStyles = makeStyles(theme => ({
   invoice: {
     marginBottom: theme.spacing(3)
+  },
+  hiddenRadio: {
+    appearance: 'none'
+  },
+  checkedRadio: {
+    border: `2px solid ${theme.palette.primary.main}`,
+    backgroundColor: theme.palette.primary.light,
+    color: theme.palette.primary.main
+  },
+  uncheckedRadio: {
+    border: `2px solid #ccc`,
+    '&:hover': {
+      cursor: 'pointer'
+    }
   }
 }));
 
@@ -42,6 +56,51 @@ const InfoBarang = ({ ...props }) => {
               Generate Invoice
             </Button>
           </Grid>
+          <Grid item xs={12} sm={12} md={6} lg={6}>
+            <Typography variant="h5">Tipe Invoice</Typography>
+            <Grid container spacing={2}>
+              <Grid item>
+                <label>
+                  <Field
+                    type="radio"
+                    name="tipe"
+                    value="service"
+                    className={classes.hiddenRadio}
+                  />
+                  <Card
+                    className={
+                      props.values.tipe === 'service'
+                        ? classes.checkedRadio
+                        : classes.uncheckedRadio
+                    }>
+                    <CardContent>
+                      <Typography variant="h6">Service</Typography>
+                    </CardContent>
+                  </Card>
+                </label>
+              </Grid>
+              <Grid item>
+                <label>
+                  <Field
+                    type="radio"
+                    name="tipe"
+                    value="produk"
+                    className={classes.hiddenRadio}
+                  />
+                  <Card
+                    className={
+                      props.values.tipe === 'produk'
+                        ? classes.checkedRadio
+                        : classes.uncheckedRadio
+                    }>
+                    <CardContent>
+                      <Typography variant="h6">Produk</Typography>
+                    </CardContent>
+                  </Card>
+                </label>
+              </Grid>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
       <Grid item xs={12} sm={12} md={6} lg={6}>
@@ -49,6 +108,7 @@ const InfoBarang = ({ ...props }) => {
           component={TextField}
           style={{ width: '100%' }}
           disabled={false}
+          shrink
           name="tanggal_invoice"
           type="date"
           variant="outlined"

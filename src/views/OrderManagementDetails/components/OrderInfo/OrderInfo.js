@@ -14,7 +14,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  TextField,
+  Typography,
   Link
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
@@ -88,6 +88,12 @@ const OrderInfo = props => {
               <TableCell>{order.no_invoice}</TableCell>
             </TableRow>
             <TableRow selected>
+              <TableCell>Tipe Invoice</TableCell>
+              <TableCell>
+                <Typography variant="overline">{order.tipe}</Typography>
+              </TableCell>
+            </TableRow>
+            <TableRow>
               <TableCell>Tanggal Dibuat</TableCell>
               <TableCell>
                 {moment(order.created_at).format('DD/MM/YYYY HH:MM')}

@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { makeStyles } from '@material-ui/styles';
-
 import axios from 'utils/axios';
 import { Page, SearchBar } from 'components';
 import { Header, Results } from './components';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,14 +19,15 @@ const OrderManagementList = () => {
   const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState([]);
 
-  const handleFetchOrder = useCallback(async () => {
-    let response = await axios.get('/api/order');
-    setOrders(response.data);
-  }, []);
+  const { order_triggered } = useSelector(state => state.trigger);
 
   useEffect(() => {
+    const handleFetchOrder = async () => {
+      let response = await axios.get('/api/order');
+      setOrders(response.data);
+    };
     handleFetchOrder();
-  }, [handleFetchOrder]);
+  }, [order_triggered]);
 
   const handleSearch = useCallback((event, value) => {
     event.preventDefault();
@@ -40,7 +41,13 @@ const OrderManagementList = () => {
             i.pelanggan.nama_belakang
               .toLowerCase()
               .includes(value.toLowerCase()) ||
-            i.status.toLowerCase().includes(value.toLowerCase())
+            i.status.toLowerCase().includes(value.toLowerCase()) ||
+            i.payment?.name_payment
+              .toLowerCase()
+              .includes(value.toLowerCase()) ||
+            i.tipe.toLowerCase().includes(value.toLowerCase()) ||
+            i.status.toLowerCase().includes(value.toLowerCase()) ||
+            i.no_invoice.toLowerCase().includes(value.toLowerCase())
         )
       );
     } else {

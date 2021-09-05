@@ -9,6 +9,7 @@ export { default as GenericToggleMenu } from './GenericToggleMenu';
 export { default as GenericMoreButton } from './GenericMoreButton';
 export { default as GoogleAnalytics } from './GoogleAnalytics';
 export { default as Label } from './Label';
+export { default as LinearProgressWithLabel } from './LinearProgressWithLabel';
 export { default as Markdown } from './Markdown';
 export { default as Navigation } from './Navigation';
 export { default as NotificationsPopover } from './NotificationsPopover';

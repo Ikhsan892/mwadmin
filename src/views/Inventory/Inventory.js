@@ -28,27 +28,27 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Role = () => {
+const Inventory = () => {
   const classes = useStyles();
 
-  const [role, setRole] = React.useState([]);
+  const [inventory, setInventory] = React.useState([]);
   const [search, setSearch] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
 
   // Get Trigger state
 
-  const { role_triggered } = useSelector(state => state.trigger);
+  // const { role_triggered } = useSelector(state => state.trigger);
 
   useEffect(() => {
     let mounted = true;
 
-    const fetchRole = () => {
+    const fetchInventory = () => {
       setLoading(true);
       axios
-        .get('/api/role')
+        .get('/api/sparepart')
         .then(response => {
           if (mounted) {
-            setRole(response.data);
+            setInventory(response.data);
             setLoading(false);
           }
         })
@@ -58,39 +58,42 @@ const Role = () => {
         });
     };
 
-    fetchRole();
+    fetchInventory();
 
     return () => {
       mounted = false;
     };
-  }, [role_triggered]);
+  }, []);
 
   const handleFilter = () => {};
   const handleSearch = (event, value) => {
     event.preventDefault();
-    if (value !== '') {
-      setSearch(
-        role.filter(i =>
-          i.nama_role.toLowerCase().includes(value.toLowerCase())
-        )
-      );
-    } else {
-      setSearch([]);
-    }
+    // if (value !== '') {
+    //   setSearch(
+    //     role.filter(i =>
+    //       i.nama_role.toLowerCase().includes(value.toLowerCase())
+    //     )
+    //   );
+    // } else {
+    //   setSearch([]);
+    // }
   };
 
   return (
-    <Page className={classes.root} title="Role User">
-      <Header title="Role User" form={false} />
+    <Page className={classes.root} title="Manajemen Inventory">
+      <Header title="Inventory Barang" />
       <SearchBar
         onFilter={handleFilter}
         onSearch={handleSearch}
         className={classes.searchBar}
       />
-      {/* <RoleForm className={classes.aboutAuthor} /> */}
-      {loading ? <LinearProgress /> : <Results role={role} search={search} />}
+      {loading ? (
+        <LinearProgress />
+      ) : (
+        <Results inventory={[]} search={search} />
+      )}
     </Page>
   );
 };
 
-export default Role;
+export default React.memo(Inventory);

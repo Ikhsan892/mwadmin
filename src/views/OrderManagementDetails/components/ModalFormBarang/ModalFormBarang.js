@@ -1,10 +1,14 @@
+import React, { useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import Grid from '@material-ui/core/Grid';
+import Fab from '@material-ui/core/Fab';
+import ClearIcon from '@material-ui/icons/Clear';
+import { LinearProgressWithLabel } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { Formik, Form } from 'formik';
 import { useDispatch } from 'react-redux';
 import * as Yup from 'yup';
-import React from 'react';
 import request from 'utils/axios';
 import {
   DialogActions,
@@ -13,27 +17,68 @@ import {
 } from 'components/ModalSubComponent/ModalSubComponent';
 import BarangForm from '../BarangForm';
 
-const useStyles = makeStyles(theme => ({}));
+const useStyles = makeStyles(theme => ({
+  box: {
+    width: 100,
+    position: 'relative',
+    height: 100
+  },
+  detail_img: {
+    width: 100,
+    height: 100,
+    borderRadius: '8%',
+    objectFit: 'cover'
+  },
+  deleteBtn: {
+    position: 'absolute',
+    background: 'none',
+    top: 0,
+    right: 0
+  }
+}));
 
-export default function ModalFormBarang({
+const ModalFormBarang = ({
   open,
   order,
+  id,
+  getDetail,
   handleClose,
   title,
   action = 'add'
-}) {
+}) => {
   /**
    * List of States
    */
   const [progress, setProgress] = React.useState(0);
+  const [images, setImages] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const formikRef = React.useRef(null);
+  const classes = useStyles();
 
   /**
    *
    * List of hooks
    */
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (open && action === 'edit') {
+      getDetail(formikRef, id).then(response => {
+        setImages(
+          response.data.image.map(i => {
+            return {
+              ...i,
+              hidden: false
+            };
+          })
+        );
+      });
+    }
+
+    return () => {
+      resetForm();
+    };
+  }, [getDetail]);
 
   const resetForm = () => {
     formikRef.current.setFieldValue('nama_barang', '');
@@ -76,6 +121,7 @@ export default function ModalFormBarang({
         })
         .then(response => {
           setLoading(false);
+          setProgress(0);
           if (response.data.status === 403) {
             alert(`${response.data.status} : ${response.data.message}`);
           } else if (
@@ -91,8 +137,53 @@ export default function ModalFormBarang({
           console.log(err);
         });
     } else if (action === 'edit') {
-      alert('edit');
+      formData.append('images', JSON.stringify(images));
+      request
+        .put('/api/barang', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          onUploadProgress: ev => {
+            const progress = Math.round((ev.loaded / ev.total) * 100);
+            setProgress(progress);
+          }
+        })
+        .then(response => {
+          setLoading(false);
+          setProgress(0);
+          if (response.data.status === 403) {
+            alert(`${response.data.status} : ${response.data.message}`);
+          } else if (
+            response.data.status === 201 ||
+            response.data.status === 200
+          ) {
+            dispatch({ type: 'BARANG_TRIGGER' });
+            resetForm();
+            handleClose();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
+  };
+
+  /**
+   * Hide Images on click
+   */
+  const hideImages = id => {
+    setImages(
+      images.map(image => {
+        if (image.id !== id) {
+          return image;
+        }
+
+        return {
+          ...image,
+          hidden: true
+        };
+      })
+    );
   };
 
   /**
@@ -112,6 +203,7 @@ export default function ModalFormBarang({
     <Formik
       innerRef={formikRef}
       initialValues={{
+        id: 0,
         nama_barang: '',
         merk: '',
         jenis_barang: '',
@@ -137,10 +229,40 @@ export default function ModalFormBarang({
                 {title}
               </DialogTitle>
               <DialogContent>
+                {progress > 0 ? (
+                  <LinearProgressWithLabel value={progress} />
+                ) : null}
+                <Grid container spacing={2}>
+                  {images &&
+                    images.map(i =>
+                      i.hidden === false ? (
+                        <Grid item>
+                          <div className={classes.box}>
+                            <Fab
+                              size="small"
+                              color="secondary"
+                              aria-label="add"
+                              onClick={() => hideImages(i.id)}
+                              className={classes.deleteBtn}>
+                              <ClearIcon />
+                            </Fab>
+                            <img
+                              src={`http://localhost:3000/${i.image_path}`}
+                              alt={i.image_path}
+                              className={classes.detail_img}
+                            />
+                          </div>
+                        </Grid>
+                      ) : null
+                    )}
+                </Grid>
                 <BarangForm {...props} />
               </DialogContent>
               <DialogActions>
-                <Button onClick={handleClose} color="primary">
+                <Button
+                  onClick={handleClose}
+                  color="primary"
+                  disabled={loading}>
                   Close
                 </Button>
                 <Button
@@ -158,4 +280,6 @@ export default function ModalFormBarang({
       )}
     </Formik>
   );
-}
+};
+
+export default React.memo(ModalFormBarang);

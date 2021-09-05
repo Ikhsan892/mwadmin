@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { makeStyles } from '@material-ui/styles';
+import { useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -14,6 +15,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  TableSortLabel,
   Checkbox,
   Tooltip
 } from '@material-ui/core';
@@ -21,6 +23,7 @@ import client from 'utils/axios';
 import Delete from '@material-ui/icons/Delete';
 import { StackAvatars, GenericToggleMenu, ComponentsGuard } from 'components';
 import { useDispatch } from 'react-redux';
+import { getComparator, stableSort } from 'utils/sortable';
 import ModalDetail from '../ModalDetail';
 import ModalFormBarang from '../ModalFormBarang';
 const useStyles = makeStyles(() => ({
@@ -30,8 +33,38 @@ const useStyles = makeStyles(() => ({
   },
   inner: {
     minWidth: 700
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1
   }
 }));
+
+const headerTable = [
+  {
+    id: 'nama_barang',
+    label: 'Nama Barang'
+  },
+  {
+    id: 'spesifikasi',
+    label: 'Spesifikasi'
+  },
+  {
+    id: 'merk',
+    label: 'Merk'
+  },
+  {
+    id: 'teknisi',
+    label: 'Teknisi'
+  }
+];
 
 const OrderItems = props => {
   const { barang, className, order, ...rest } = props;
@@ -41,6 +74,8 @@ const OrderItems = props => {
   const [selectedBarang, setSelectedBarang] = React.useState([]);
   const [detail, setDetail] = React.useState({ title: '', open: false, id: 0 });
   const [edit, setEdit] = React.useState({ title: '', open: false, id: 0 });
+  const [Order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('nama_role');
 
   const handleSelectAll = event => {
     const selectedBarang = event.target.checked
@@ -50,12 +85,49 @@ const OrderItems = props => {
     setSelectedBarang(selectedBarang);
   };
 
+  const createSortHandler = property => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
   // Open Detail
   const handleDetail = id => {
     setDetail(prevState => {
       return { ...prevState, title: 'Detail Barang', open: true, id: id };
     });
   };
+
+  /**
+   * Get ID Data
+   */
+  const getDetail = useCallback(
+    async (formikRef, id) => {
+      const response = await client.get(`/api/barang/${id}`);
+      formikRef.current.setFieldValue(
+        'nama_barang',
+        response.data.nama_barang || ''
+      );
+      formikRef.current.setFieldValue(
+        'teknisi',
+        response.data.teknisi.map(i => i.id) || []
+      );
+      formikRef.current.setFieldValue('merk', response.data.merk || '');
+      formikRef.current.setFieldValue(
+        'spesifikasi',
+        response.data.spesifikasi || ''
+      );
+
+      formikRef.current.setFieldValue('keluhan', response.data.keluhan || '');
+      formikRef.current.setFieldValue(
+        'jenis_barang',
+        response.data.jenis_barang || ''
+      );
+      formikRef.current.setFieldValue('id', response.data.id || 0);
+      return response;
+    },
+    [edit.open]
+  );
 
   // Open Edit
   const handleEdit = id => {
@@ -117,6 +189,7 @@ const OrderItems = props => {
         open={edit.open}
         id={edit.id}
         order={order}
+        getDetail={getDetail}
         action="edit"
         handleClose={() =>
           setEdit(prevState => {
@@ -171,40 +244,59 @@ const OrderItems = props => {
                         />
                       </ComponentsGuard>
                     </TableCell>
-                    <TableCell>Nama Barang</TableCell>
-                    <TableCell>Spesifikasi</TableCell>
-                    <TableCell>Merk</TableCell>
-                    <TableCell>Teknisi</TableCell>
+                    {headerTable.map(i => (
+                      <TableCell
+                        key={i.id}
+                        sortDirection={orderBy === i.id ? Order : false}>
+                        <TableSortLabel
+                          active={orderBy === i.id}
+                          direction={orderBy === i.id ? Order : 'asc'}
+                          onClick={() => createSortHandler(i.id)}>
+                          {i.label}
+                          {orderBy === i.id ? (
+                            <span className={classes.visuallyHidden}>
+                              {Order === 'desc'
+                                ? 'sorted descending'
+                                : 'sorted ascending'}
+                            </span>
+                          ) : null}
+                        </TableSortLabel>
+                      </TableCell>
+                    ))}
                     <TableCell>Action</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {barang.map(item => (
-                    <TableRow key={item.id}>
-                      <TableCell padding="checkbox">
-                        <ComponentsGuard roles={['TEKNISI']}>
-                          <Checkbox
-                            checked={selectedBarang.indexOf(item.id) !== -1}
-                            color="primary"
-                            onChange={event => handleSelectOne(event, item.id)}
-                            value={selectedBarang.indexOf(item.id) !== -1}
+                  {stableSort(barang, getComparator(Order, orderBy)).map(
+                    item => (
+                      <TableRow key={item.id}>
+                        <TableCell padding="checkbox">
+                          <ComponentsGuard roles={['TEKNISI']}>
+                            <Checkbox
+                              checked={selectedBarang.indexOf(item.id) !== -1}
+                              color="primary"
+                              onChange={event =>
+                                handleSelectOne(event, item.id)
+                              }
+                              value={selectedBarang.indexOf(item.id) !== -1}
+                            />
+                          </ComponentsGuard>
+                        </TableCell>
+                        <TableCell>{item.nama_barang}</TableCell>
+                        <TableCell>{item.spesifikasi}</TableCell>
+                        <TableCell>{item.merk}</TableCell>
+                        <TableCell>
+                          <StackAvatars avatars={item.teknisi} limit={4} />
+                        </TableCell>
+                        <TableCell>
+                          <GenericToggleMenu
+                            handleDetail={() => handleDetail(item.id)}
+                            handleEdit={() => handleEdit(item.id)}
                           />
-                        </ComponentsGuard>
-                      </TableCell>
-                      <TableCell>{item.nama_barang}</TableCell>
-                      <TableCell>{item.spesifikasi}</TableCell>
-                      <TableCell>{item.merk}</TableCell>
-                      <TableCell>
-                        <StackAvatars avatars={item.teknisi} limit={4} />
-                      </TableCell>
-                      <TableCell>
-                        <GenericToggleMenu
-                          handleDetail={() => handleDetail(item.id)}
-                          handleEdit={() => handleEdit(item.id)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  )}
                 </TableBody>
               </Table>
             </div>

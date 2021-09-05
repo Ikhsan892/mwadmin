@@ -1,23 +1,27 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import useRouter from 'utils/useRouter';
-import { useLocation, matchPath } from 'react-router-dom';
+import React, { Fragment, useCallback, useState } from 'react';
 import { useCookies } from 'react-cookie';
+import { useDispatch, useSelector } from 'react-redux';
+import { matchPath, useLocation } from 'react-router-dom';
+import useRouter from 'utils/useRouter';
 import Error401 from 'views/Error401';
 
 // Example of user roles:   ['GUEST', 'USER', 'ADMIN'];
 
 const AuthGuard = props => {
   const { children } = props;
-  const [isGranted, setIsGranted] = useState(true);
   const dispatch = useDispatch();
+  const [isGranted, setIsGranted] = useState(false);
   const session = useSelector(state => state.session);
   const router = useRouter();
   const location = useLocation();
   const [cookies] = useCookies(['token']);
 
-  useEffect(() => {
+  const handleGranted = useCallback(() => {
+    if (!cookies._TuVbwpW || cookies._TuVbwpW === undefined) {
+      router.history.push('/auth/login');
+    }
+
     let granted = ['/overview', '/invoices', '/settings/general'];
 
     if (!granted.includes(location.pathname)) {
@@ -25,50 +29,16 @@ const AuthGuard = props => {
         session.user.menu.filter(i => matchPath(location.pathname, i.link))
           .length < 1
       ) {
-        setIsGranted(false);
+        return <Error401 />;
       } else {
-        setIsGranted(true);
+        return children;
       }
     } else {
-      setIsGranted(true);
+      return children;
     }
+  }, [session.user.menu, location.pathname]);
 
-    if (!cookies._TuVbwpW || cookies._TuVbwpW === undefined) {
-      router.history.push('/auth/login');
-    }
-    // if (!_.includes(location.pathname)) {
-    //   router.history.push('/errors/error-401');
-    // }
-    // if (!session.loggedIn || !session.user) {
-    //   router.history.push('/auth/login');
-    //   return;
-    // }
-    // if (!roles.includes(session.user.role)) {
-    //   router.history.push('/errors/error-401');
-    // }
-  }, [router]);
-  useEffect(() => {
-    let granted = ['/overview', '/invoices', '/settings/general'];
-
-    if (!granted.includes(location.pathname)) {
-      if (
-        session.user.menu.filter(i => matchPath(location.pathname, i.link))
-          .length < 1
-      ) {
-        setIsGranted(false);
-      } else {
-        setIsGranted(true);
-      }
-    } else {
-      setIsGranted(true);
-    }
-
-    if (!cookies._TuVbwpW || cookies._TuVbwpW === undefined) {
-      router.history.push('/auth/login');
-    }
-  }, []);
-
-  return <Fragment>{isGranted ? children : <Error401 />}</Fragment>;
+  return <Fragment>{handleGranted()}</Fragment>;
 };
 
 AuthGuard.propTypes = {
