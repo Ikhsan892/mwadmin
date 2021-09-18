@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Router } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import MomentUtils from '@date-io/moment';
 import { ThemeProvider } from '@material-ui/styles';

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
@@ -34,10 +34,10 @@ const TableEditBar = props => {
     ...rest
   } = props;
 
-  console.log('Render Table Edit Bar');
-
   const classes = useStyles();
-  const open = selected.length > 0;
+  const open = useMemo(() => {
+    return selected.length > 0;
+  }, [selected]);
 
   return (
     <Drawer

@@ -22,16 +22,23 @@ const AuthGuard = props => {
       router.history.push('/auth/login');
     }
 
-    let granted = ['/overview', '/invoices', '/settings/general'];
+    let granted = [
+      '/overview',
+      '/invoices',
+      '/settings/general',
+      '/inventory/edit/namabarang/accessories'
+    ];
 
     if (!granted.includes(location.pathname)) {
-      if (
-        session.user.menu.filter(i => matchPath(location.pathname, i.link))
-          .length < 1
-      ) {
-        return <Error401 />;
-      } else {
-        return children;
+      if (session.user.menu.length > 0) {
+        if (
+          session.user.menu.filter(i => matchPath(location.pathname, i.link))
+            .length < 1
+        ) {
+          return <Error401 />;
+        } else {
+          return children;
+        }
       }
     } else {
       return children;

@@ -186,7 +186,8 @@ const Results = props => {
       batal: colors.grey[600],
       dp: colors.orange[600],
       lunas: colors.green[600],
-      refund: colors.red[600]
+      refund: colors.red[600],
+      'menunggu pembayaran': colors.yellow[700]
     };
   }, []);
 
@@ -271,7 +272,7 @@ const Results = props => {
                         <TableCell>
                           <Label
                             color={paymentStatusColors[order.status]}
-                            variant="outlined">
+                            variant="contained">
                             {order.status}
                           </Label>
                         </TableCell>

@@ -73,10 +73,6 @@ export default [
           {
             title: 'Tambah Inventory',
             href: '/inventory/tambah'
-          },
-          {
-            title: 'Diskon Inventory',
-            href: '/inventory/diskon'
           }
         ]
       },

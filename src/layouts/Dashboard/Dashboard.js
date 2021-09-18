@@ -2,9 +2,9 @@ import React, { Suspense, useState, useEffect } from 'react';
 import useRouter from 'utils/useRouter';
 import { renderRoutes } from 'react-router-config';
 import PropTypes from 'prop-types';
-import client from 'utils/axios';
 import { makeStyles } from '@material-ui/styles';
-import { LinearProgress } from '@material-ui/core';
+import MuiAlert from '@material-ui/lab/Alert';
+import { LinearProgress, Snackbar } from '@material-ui/core';
 import { useCookies } from 'react-cookie';
 import { AuthGuard } from 'components';
 import { useSelector, useDispatch } from 'react-redux';
@@ -40,11 +40,18 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 const Dashboard = props => {
   const { route } = props;
   const dispatch = useDispatch();
   const classes = useStyles();
   const { isMaintain } = useSelector(state => state.maintained);
+  const { message_triggered, message, severity } = useSelector(
+    state => state.trigger
+  );
   const [cookies, setCookies, removeCookie] = useCookies(['_TuVbwpW']);
   const [openNavBarMobile, setOpenNavBarMobile] = useState(false);
   const router = useRouter();
@@ -66,6 +73,17 @@ const Dashboard = props => {
 
   return (
     <div className={classes.root}>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={message_triggered}
+        autoHideDuration={6000}
+        onClose={() => dispatch({ type: 'MESSAGE_INFO_CLOSE_TRIGGER' })}>
+        <Alert
+          onClose={() => dispatch({ type: 'MESSAGE_INFO_CLOSE_TRIGGER' })}
+          severity={severity}>
+          {message}
+        </Alert>
+      </Snackbar>
       <Interceptors />
       <TopBar
         className={classes.topBar}

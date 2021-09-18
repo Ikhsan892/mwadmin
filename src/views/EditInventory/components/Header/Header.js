@@ -20,30 +20,16 @@ const Header = props => {
 
   const classes = useStyles();
 
-  const tambahBarang = () => {
-    router.history.push('/inventory/tambah');
-  };
-
   return (
     <div {...rest} className={clsx(classes.root, className)}>
       <Grid alignItems="flex-end" container justify="space-between" spacing={3}>
         <Grid item>
           <Typography component="h2" gutterBottom variant="overline">
-            Manajemen
+            Edit Data
           </Typography>
           <Typography component="h1" variant="h3">
             {props.title}
           </Typography>
-        </Grid>
-        <Grid item>
-          <Fab
-            variant="extended"
-            size="medium"
-            color="primary"
-            onClick={tambahBarang}>
-            <AddIcon className={classes.addIcon} />
-            Tambah Barang
-          </Fab>
         </Grid>
       </Grid>
     </div>

@@ -7,11 +7,33 @@ const initialState = {
   pengiriman_triggered: false,
   role_triggered: false,
   barang_triggered: false,
-  order_triggered: false
+  order_triggered: false,
+  inventory_triggered: false,
+  message_triggered: false,
+  message: '',
+  severity: 'success'
 };
 
 const triggerReducer = (state = initialState, action) => {
   switch (action.type) {
+    case actionTypes.MESSAGE_INFO_OPEN_TRIGGER: {
+      return {
+        ...state,
+        message_triggered: true,
+        message: action.payload.message,
+        severity: action.payload.severity
+      };
+    }
+
+    case actionTypes.MESSAGE_INFO_CLOSE_TRIGGER: {
+      return {
+        ...state,
+        message_triggered: false,
+        message: '',
+        severity: 'success'
+      };
+    }
+
     case actionTypes.PELANGGAN_INSERTED: {
       return {
         ...state,
@@ -60,6 +82,14 @@ const triggerReducer = (state = initialState, action) => {
         payment_inserted: !state.payment_inserted
       };
     }
+
+    case actionTypes.INVENTORY_TRIGGER: {
+      return {
+        ...state,
+        inventory_triggered: !state.inventory_triggered
+      };
+    }
+
     default: {
       return state;
     }

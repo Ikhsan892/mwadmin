@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { LinearProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { Page, SearchBar } from 'components';
@@ -37,7 +37,7 @@ const Inventory = () => {
 
   // Get Trigger state
 
-  // const { role_triggered } = useSelector(state => state.trigger);
+  const { inventory_triggered } = useSelector(state => state.trigger);
 
   useEffect(() => {
     let mounted = true;
@@ -45,7 +45,7 @@ const Inventory = () => {
     const fetchInventory = () => {
       setLoading(true);
       axios
-        .get('/api/sparepart')
+        .get('/api/inventory')
         .then(response => {
           if (mounted) {
             setInventory(response.data);
@@ -63,21 +63,24 @@ const Inventory = () => {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [inventory_triggered]);
 
   const handleFilter = () => {};
-  const handleSearch = (event, value) => {
-    event.preventDefault();
-    // if (value !== '') {
-    //   setSearch(
-    //     role.filter(i =>
-    //       i.nama_role.toLowerCase().includes(value.toLowerCase())
-    //     )
-    //   );
-    // } else {
-    //   setSearch([]);
-    // }
-  };
+  const handleSearch = useCallback(
+    (event, value) => {
+      event.preventDefault();
+      if (value !== '') {
+        setSearch(
+          inventory.filter(i =>
+            i.nama_barang.toLowerCase().includes(value.toLowerCase())
+          )
+        );
+      } else {
+        setSearch([]);
+      }
+    },
+    [inventory]
+  );
 
   return (
     <Page className={classes.root} title="Manajemen Inventory">
@@ -90,7 +93,7 @@ const Inventory = () => {
       {loading ? (
         <LinearProgress />
       ) : (
-        <Results inventory={[]} search={search} />
+        <Results inventory={inventory} search={search} />
       )}
     </Page>
   );

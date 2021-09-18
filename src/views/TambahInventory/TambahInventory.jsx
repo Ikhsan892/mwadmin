@@ -3,6 +3,7 @@ import { Header } from './components';
 import { Card, CardContent, CardHeader, Grid, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import React, { useCallback, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import SaveIcon from '@material-ui/icons/Save';
 import client from 'utils/axios';
 import useRouter from 'utils/useRouter';
@@ -50,12 +51,19 @@ const InventorySchema = Yup.object().shape({
 const TambahInventory = () => {
   const router = useRouter();
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const handleSubmit = useCallback(values => {
     if (values.harga_jual < values.harga_beli) {
-      alert('Harga Jual tidak boleh kurang dari harga beli');
+      dispatch({
+        type: 'MESSAGE_INFO_OPEN_TRIGGER',
+        payload: {
+          message: 'Harga Jual tidak boleh kurang dari harga beli',
+          severity: 'warning'
+        }
+      });
     } else {
       setLoading(true);
       let formData = new FormData();
@@ -79,6 +87,13 @@ const TambahInventory = () => {
         .then(response => {
           setLoading(false);
           setProgress(0);
+          dispatch({
+            type: 'MESSAGE_INFO_OPEN_TRIGGER',
+            payload: {
+              message: 'Success Tambah Barang',
+              severity: 'success'
+            }
+          });
           router.history.push('/inventory/list');
         })
         .catch(err => {

@@ -104,9 +104,19 @@ const routes = [
         component: lazy(() => import('views/TambahInventory'))
       },
       {
+        path: '/inventory/edit/:namabarang/:tipebarang',
+        exact: true,
+        component: lazy(() => import('views/EditInventory'))
+      },
+      {
         path: '/inventory/list',
         exact: true,
         component: lazy(() => import('views/Inventory'))
+      },
+      {
+        path: '/inventory/detail/:namabarang/:tipebarang',
+        exact: true,
+        component: lazy(() => import('views/DetailInventory'))
       },
       {
         path: '/kanban-board',

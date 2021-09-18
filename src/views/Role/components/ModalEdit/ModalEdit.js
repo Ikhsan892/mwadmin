@@ -58,7 +58,13 @@ const ModalEdit = ({ handleClose, open, user, feature, id }) => {
 
   const handleSave = async () => {
     if (nama_role === '' || selectedFeatures.length < 1) {
-      alert('Tidak bisa lanjut sampai semua field terpenuhi');
+      dispatch({
+        type: 'MESSAGE_INFO_OPEN_TRIGGER',
+        payload: {
+          message: 'Tidak bisa lanjut sampai semua field terpenuhi',
+          severity: 'warning'
+        }
+      });
     } else {
       setLoading(true);
       await client
@@ -68,6 +74,13 @@ const ModalEdit = ({ handleClose, open, user, feature, id }) => {
         })
         .then(data => {
           setLoading(false);
+          dispatch({
+            type: 'MESSAGE_INFO_OPEN_TRIGGER',
+            payload: {
+              message: 'Data has been updated',
+              severity: 'success'
+            }
+          });
           alert('Data has been updated');
           dispatch({ type: 'ROLE_TRIGGER' });
           dispatch(logout());

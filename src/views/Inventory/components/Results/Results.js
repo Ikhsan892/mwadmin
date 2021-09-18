@@ -6,6 +6,7 @@ import {
   Checkbox,
   colors,
   Divider,
+  Link,
   IconButton,
   Table,
   TableBody,
@@ -20,17 +21,14 @@ import {
 import { Edit } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 import clsx from 'clsx';
-import {
-  GenericMoreButton,
-  Label,
-  StackAvatars,
-  TableEditBar
-} from 'components';
+import { GenericMoreButton, Label, TableEditBar } from 'components';
 import PropTypes from 'prop-types';
-import React, { useState, useMemo } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import React, { useState, useMemo, useCallback } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useDispatch } from 'react-redux';
 import client from 'utils/axios';
+import { formatRupiah } from 'utils/formatRupiah';
 import { getComparator, stableSort } from 'utils/sortable';
 
 const useStyles = makeStyles(theme => ({
@@ -68,19 +66,23 @@ const useStyles = makeStyles(theme => ({
 
 const headerTable = [
   {
-    id: 'nama_role',
+    id: 'nama_barang',
     label: 'Nama Barang'
   },
   {
-    id: 'nama_role',
+    id: 'harga_beli',
     label: 'Harga Beli'
   },
   {
-    id: 'previlleges',
+    id: 'harga_jual',
     label: 'Harga Jual'
   },
   {
-    id: 'previlleges',
+    id: 'disabled',
+    label: 'Status'
+  },
+  {
+    id: 'stok',
     label: 'Stok'
   }
 ];
@@ -95,10 +97,6 @@ const Results = props => {
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('nama_role');
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [openEdit, setOpenEdit] = useState(false);
-  const [features, setFeatures] = useState([]);
-  const [user, setUser] = useState('');
-  const [idEdit, setIdEdit] = useState(0);
 
   const dispatch = useDispatch();
   const firstIndex = useMemo(() => {
@@ -108,102 +106,108 @@ const Results = props => {
     return page * rowsPerPage + rowsPerPage;
   }, [page, rowsPerPage]);
 
-  const handleSelectAll = event => {
+  const handleSelectAll = useCallback(event => {
     const selectedInventory = event.target.checked
-      ? inventory.map(m => m.id)
+      ? inventory.map(m =>
+          JSON.stringify({ id: m.id, tipe_barang: m.tipe_barang })
+        )
       : [];
 
     setselectedInventory(selectedInventory);
-  };
+  }, []);
 
-  const createSortHandler = property => {
+  const createSortHandler = useCallback(property => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
-  };
+  }, []);
 
-  const handleClickOpenDelete = () => {
+  const handleClickOpenDelete = useCallback(() => {
     let delete_data = window.confirm('Are you sure wants to delete this data');
     if (delete_data) {
       let body = {
         id: selectedInventory
       };
       client
-        .delete(`/api/role`, {
+        .delete(`/api/inventory`, {
           data: body
         })
         .then(data => {
           setselectedInventory([]);
-          dispatch({ type: 'ROLE_TRIGGER' });
+          dispatch({ type: 'INVENTORY_TRIGGER' });
         })
         .catch(err => {
           console.log(err);
           alert('something error while deleting this data');
         });
     }
-  };
+  }, [selectedInventory]);
 
-  const handleSelectOne = (event, id) => {
-    const selectedIndex = selectedInventory.indexOf(id);
-    let newselectedInventory = [];
+  const handleSelectOne = useCallback(
+    (event, id) => {
+      const selectedIndex = selectedInventory.indexOf(id);
+      let newselectedInventory = [];
 
-    if (selectedIndex === -1) {
-      newselectedInventory = newselectedInventory.concat(selectedInventory, id);
-    } else if (selectedIndex === 0) {
-      newselectedInventory = newselectedInventory.concat(
-        selectedInventory.slice(1)
-      );
-    } else if (selectedIndex === selectedInventory.length - 1) {
-      newselectedInventory = newselectedInventory.concat(
-        selectedInventory.slice(0, -1)
-      );
-    } else if (selectedIndex > 0) {
-      newselectedInventory = newselectedInventory.concat(
-        selectedInventory.slice(0, selectedIndex),
-        selectedInventory.slice(selectedIndex + 1)
-      );
-    }
+      if (selectedIndex === -1) {
+        newselectedInventory = newselectedInventory.concat(
+          selectedInventory,
+          id
+        );
+      } else if (selectedIndex === 0) {
+        newselectedInventory = newselectedInventory.concat(
+          selectedInventory.slice(1)
+        );
+      } else if (selectedIndex === selectedInventory.length - 1) {
+        newselectedInventory = newselectedInventory.concat(
+          selectedInventory.slice(0, -1)
+        );
+      } else if (selectedIndex > 0) {
+        newselectedInventory = newselectedInventory.concat(
+          selectedInventory.slice(0, selectedIndex),
+          selectedInventory.slice(selectedIndex + 1)
+        );
+      }
 
-    setselectedInventory(newselectedInventory);
-  };
+      setselectedInventory(newselectedInventory);
+    },
+    [selectedInventory]
+  );
 
-  const handleChangePage = (event, page) => {
+  const handleChangePage = useCallback((event, page) => {
     setPage(page);
-  };
+  }, []);
 
-  const handleChangeRowsPerPage = event => {
+  const handleChangeRowsPerPage = useCallback(event => {
     setRowsPerPage(event.target.value);
-  };
+  }, []);
 
   const handleList = useMemo(() => {
     return search.length > 0 ? search : inventory;
   }, [search, inventory]);
 
-  const handleOpenEdit = (id, user, features) => {
-    setOpenEdit(true);
-    setUser(user);
-    setIdEdit(id);
-    setFeatures(features);
-  };
-
-  const handleCloseEdit = () => {
-    setOpenEdit(false);
-    setUser('');
-    setIdEdit(0);
-    setFeatures([]);
-  };
-
   const activeColors = useMemo(() => {
     return {
-      false: colors.red[600],
-      true: colors.green[600]
+      false: colors.green[600],
+      true: colors.red[600],
+      warning: colors.yellow[600]
     };
   }, []);
 
+  const isDisabled = useCallback(
+    (disabled, stok) => {
+      if (disabled) {
+        return <Label color={activeColors[disabled]}>Disembunyikan</Label>;
+      }
+      if (stok < 3) {
+        return <Label color={activeColors['warning']}>Stok Menipis</Label>;
+      }
+    },
+    [activeColors]
+  );
+
   return (
     <div {...rest} className={clsx(classes.root, className)}>
-      {/* <ModalEdit
-        open={openEdit}
+      {/* <ModalEditwwwwwopen={openEdit}
         handleClose={handleCloseEdit}
         user={user}
         feature={features}
@@ -219,7 +223,7 @@ const Results = props => {
         <CardContent className={classes.content}>
           <PerfectScrollbar>
             <div className={classes.inner}>
-              <Table>
+              <Table size="small">
                 <TableHead>
                   <TableRow>
                     <TableCell padding="checkbox">
@@ -262,55 +266,70 @@ const Results = props => {
                     .map(order => (
                       <TableRow
                         key={order.id}
-                        selected={selectedInventory.indexOf(order.id) !== -1}>
+                        selected={
+                          selectedInventory.indexOf(
+                            JSON.stringify({
+                              id: order.id,
+                              tipe_barang: order.tipe_barang
+                            })
+                          ) !== -1
+                        }>
                         <TableCell padding="checkbox">
-                          {order.user.length < 1 ? (
-                            <Checkbox
-                              checked={
-                                selectedInventory.indexOf(order.id) !== -1
-                              }
-                              color="primary"
-                              onChange={event =>
-                                handleSelectOne(event, order.id)
-                              }
-                              value={selectedInventory.indexOf(order.id) !== -1}
-                            />
-                          ) : (
-                            ''
-                          )}
+                          <Checkbox
+                            checked={
+                              selectedInventory.indexOf(
+                                JSON.stringify({
+                                  id: order.id,
+                                  tipe_barang: order.tipe_barang
+                                })
+                              ) !== -1
+                            }
+                            color="primary"
+                            onChange={event =>
+                              handleSelectOne(
+                                event,
+                                JSON.stringify({
+                                  id: order.id,
+                                  tipe_barang: order.tipe_barang
+                                })
+                              )
+                            }
+                            value={
+                              selectedInventory.indexOf(
+                                JSON.stringify({
+                                  id: order.id,
+                                  tipe_barang: order.tipe_barang
+                                })
+                              ) !== -1
+                            }
+                          />
                         </TableCell>
                         <TableCell className={classes.name_role}>
-                          {order.nama_role}
+                          <Link
+                            color="inherit"
+                            component={RouterLink}
+                            to={`/inventory/detail/${order.nama_barang}/${order.tipe_barang}`}
+                            variant="h6">
+                            {order.nama_barang}
+                          </Link>
                         </TableCell>
                         <TableCell>
-                          {order.user.length > 0 ? (
-                            <StackAvatars avatars={order.user} limit={4} />
-                          ) : (
-                            '0 users'
-                          )}
+                          Rp {formatRupiah(order.harga_beli)},-
                         </TableCell>
                         <TableCell>
-                          <Label
-                            color={
-                              activeColors[
-                                order.menu.length > 0 ? 'true' : 'false'
-                              ]
-                            }>
-                            {order.menu.length} Previllege
-                          </Label>
+                          Rp {formatRupiah(order.harga_jual)},-
                         </TableCell>
+                        <TableCell>
+                          {isDisabled(order.disabled, order.stok)}
+                        </TableCell>
+                        <TableCell>{order.stok}</TableCell>
                         <TableCell>
                           <Tooltip title="Edit">
                             <IconButton
                               color="primary"
                               aria-label="edit data"
-                              onClick={() =>
-                                handleOpenEdit(
-                                  order.id,
-                                  order.nama_role,
-                                  order.menu
-                                )
-                              }>
+                              component={RouterLink}
+                              to={`/inventory/edit/${order.nama_barang}/${order.tipe_barang}`}>
                               <Edit />
                             </IconButton>
                           </Tooltip>

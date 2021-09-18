@@ -64,6 +64,7 @@ const Interceptors = () => {
   return (
     <>
       <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={messageOpen}
         autoHideDuration={6000}
         onClose={() => setMessageOpen(false)}>
