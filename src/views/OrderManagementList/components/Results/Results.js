@@ -187,7 +187,7 @@ const Results = props => {
       dp: colors.orange[600],
       lunas: colors.green[600],
       refund: colors.red[600],
-      'menunggu pembayaran': colors.yellow[700]
+      'menunggu kepastian': colors.yellow[700]
     };
   }, []);
 
