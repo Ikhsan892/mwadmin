@@ -60,6 +60,8 @@ const DetailInventory = props => {
       <Header title="" />
       {isFound ? (
         <Content detail={detail} />
+      ) : loading && !isFound ? (
+        <LinearProgress />
       ) : (
         <Grid
           container

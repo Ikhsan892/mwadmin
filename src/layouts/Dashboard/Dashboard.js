@@ -76,7 +76,7 @@ const Dashboard = props => {
       <Snackbar
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={message_triggered}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
         onClose={() => dispatch({ type: 'MESSAGE_INFO_CLOSE_TRIGGER' })}>
         <Alert
           onClose={() => dispatch({ type: 'MESSAGE_INFO_CLOSE_TRIGGER' })}

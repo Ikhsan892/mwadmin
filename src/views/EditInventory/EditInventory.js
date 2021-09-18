@@ -14,10 +14,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import SaveIcon from '@material-ui/icons/Save';
 import { Header } from './components';
 import axios from 'utils/axios';
+import useRouter from 'utils/useRouter';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import FormInventory from './components/FormInventory/FormInventory';
 import ClearIcon from '@material-ui/icons/Clear';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -85,6 +87,8 @@ const EditInventory = props => {
   const { match } = props;
   const { namabarang, tipebarang } = match.params;
   const formikRef = useRef(null);
+  const dispatch = useDispatch();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isFound, setIsFound] = useState(false);
@@ -93,20 +97,82 @@ const EditInventory = props => {
   /**
    * Hide Images on click
    */
-  const hideImages = id => {
-    setImages(
-      images.map(image => {
-        if (image.id !== id) {
-          return image;
-        }
+  const hideImages = useCallback(
+    id => {
+      setImages(
+        images.map(image => {
+          if (image.id !== id) {
+            return image;
+          }
 
-        return {
-          ...image,
-          hidden: true
-        };
-      })
-    );
-  };
+          return {
+            ...image,
+            hidden: true
+          };
+        })
+      );
+    },
+    [images]
+  );
+
+  const handleSubmit = useCallback(
+    values => {
+      if (values.harga_jual < values.harga_beli) {
+        dispatch({
+          type: 'MESSAGE_INFO_OPEN_TRIGGER',
+          payload: {
+            message: 'Harga Jual tidak boleh kurang dari harga beli',
+            severity: 'warning'
+          }
+        });
+      } else {
+        let formData = new FormData();
+        formData.append('images', JSON.stringify(images));
+        for (var key in values) {
+          if (key === 'gambar') {
+            Array.from(values.gambar).map(i => formData.append('file', i));
+          } else {
+            formData.append(`${key}`, `${values[key].toString()}`);
+          }
+        }
+        setLoading(true);
+        axios
+          .put('/api/inventory', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            },
+            onUploadProgress: ev => {
+              const progress = Math.round((ev.loaded / ev.total) * 100);
+              setProgress(progress);
+            }
+          })
+          .then(response => {
+            setLoading(false);
+            setProgress(0);
+            if (response.status === 201 || response.status === 200) {
+              dispatch({
+                type: 'MESSAGE_INFO_OPEN_TRIGGER',
+                payload: {
+                  message: `Success Updating data`,
+                  severity: 'success'
+                }
+              });
+              router.history.push('/inventory/list');
+            }
+          })
+          .catch(err => {
+            dispatch({
+              type: 'MESSAGE_INFO_OPEN_TRIGGER',
+              payload: {
+                message: `Something error while updating product Error code : ${err.response.status}`,
+                severity: 'error'
+              }
+            });
+          });
+      }
+    },
+    [images]
+  );
 
   useEffect(() => {
     const fetchDetailBarang = async () => {
@@ -127,6 +193,7 @@ const EditInventory = props => {
                 };
               })
             );
+            formikRef.current.setFieldValue('id', response.data.data.id);
             formikRef.current.setFieldValue(
               'nama_barang',
               response.data.data.nama_barang
@@ -140,10 +207,11 @@ const EditInventory = props => {
               response.data.data.tipe_barang
             );
             if (response.data.data.tipe_barang === 'sparepart') {
-              formikRef.current.setFieldValue(
-                'spesifikasi_barang',
-                response.data.data.spesifikasi_barang
-              );
+              response.data.data.spesifikasi_barang &&
+                formikRef.current.setFieldValue(
+                  'spesifikasi_barang',
+                  response.data.data.spesifikasi_barang
+                );
             }
             formikRef.current.setFieldValue(
               'disabled',
@@ -212,6 +280,7 @@ const EditInventory = props => {
                 <Formik
                   innerRef={formikRef}
                   initialValues={{
+                    id: 0,
                     gambar: [],
                     nama_barang: '',
                     merk_barang: '',
@@ -224,7 +293,7 @@ const EditInventory = props => {
                     deskripsi: ''
                   }}
                   validationSchema={InventorySchema}
-                  onSubmit={values => console.log(values)}
+                  onSubmit={values => handleSubmit(values)}
                   noValidate>
                   {props => (
                     <FormInventory props={props}>

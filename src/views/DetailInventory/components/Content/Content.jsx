@@ -56,6 +56,19 @@ const Content = ({ detail }) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  const isSparepart = useCallback((data, spesifikasi) => {
+    if (data === 'sparepart') {
+      return (
+        <Grid item xs={12} md={6}>
+          <Typography variant="overline">Spesifikasi Barang</Typography>
+          <Typography variant="h5" className={classes.tipe_barang}>
+            {spesifikasi || '-'}
+          </Typography>
+        </Grid>
+      );
+    }
+  }, []);
+
   const handleDelete = useCallback(async (id, tipe_barang) => {
     let confirm = window.confirm('Are you sure want to delete this product');
     if (confirm) {
@@ -157,6 +170,10 @@ const Content = ({ detail }) => {
                     {detail.data?.tipe_barang || '-'}
                   </Typography>
                 </Grid>
+                {isSparepart(
+                  detail.data?.tipe_barang,
+                  detail.data?.spesifikasi_barang
+                )}
                 <Grid item xs={12} md={6}>
                   <Typography variant="overline">Harga Beli</Typography>
                   <Typography variant="h5">
