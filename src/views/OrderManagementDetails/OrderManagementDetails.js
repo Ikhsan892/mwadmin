@@ -41,6 +41,8 @@ const OrderManagementDetails = props => {
       <div
         style={{
           display: 'flex',
+          height: '100vh',
+          width: '100vh',
           alignItems: 'center',
           justifyContent: 'center'
         }}>
@@ -58,12 +60,14 @@ const OrderManagementDetails = props => {
         </Grid>
         <Grid item md={8} xl={9} xs={12}>
           <Grid container spacing={3}>
+            {order.tipe === 'service' ? (
+              <Grid item xs={12}>
+                <OrderItems barang={order.barang} order={order} />
+              </Grid>
+            ) : null}
             <Grid item xs={12}>
-              <OrderItems barang={order.barang} order={order} />
-            </Grid>
-            {/* <Grid item xs={12}>
               <OrderAddons order={order} />
-            </Grid> */}
+            </Grid>
           </Grid>
         </Grid>
       </Grid>

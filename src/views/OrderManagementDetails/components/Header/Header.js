@@ -16,6 +16,8 @@ import { ModalFormBarang } from '..';
 import request from 'utils/axios';
 import useRouter from 'utils/useRouter';
 import AddIcon from '@material-ui/icons/Add';
+import PrintIcon from '@material-ui/icons/Print';
+import { ComponentsGuard } from 'components';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -119,24 +121,34 @@ const Header = props => {
         <Grid item>
           <Grid container spacing={2}>
             <Grid item>
-              <Button
-                className={classes.deleteButton}
-                variant="contained"
-                onClick={() => handleDelete(order.id)}>
-                <DeleteIcon className={classes.deleteIcon} />
-                Delete
+              <Button color="secondary" variant="outlined">
+                <PrintIcon className={classes.deleteIcon} />
+                Cetak Invoice
               </Button>
             </Grid>
-            <Grid item>
-              <Fab
-                variant="extended"
-                size="medium"
-                color="primary"
-                onClick={() => setOpenForm(true)}>
-                <AddIcon className={classes.deleteIcon} />
-                Tambah Barang
-              </Fab>
-            </Grid>
+            <ComponentsGuard roles={['TEKNISI']}>
+              <Grid item>
+                <Button
+                  className={classes.deleteButton}
+                  variant="contained"
+                  onClick={() => handleDelete(order.id)}>
+                  <DeleteIcon className={classes.deleteIcon} />
+                  Delete
+                </Button>
+              </Grid>
+              {order.tipe === 'service' ? (
+                <Grid item>
+                  <Fab
+                    variant="extended"
+                    size="medium"
+                    color="primary"
+                    onClick={() => setOpenForm(true)}>
+                    <AddIcon className={classes.deleteIcon} />
+                    Tambah Barang
+                  </Fab>
+                </Grid>
+              ) : null}
+            </ComponentsGuard>
           </Grid>
         </Grid>
       </Grid>

@@ -52,7 +52,7 @@ const Dashboard = props => {
   const { message_triggered, message, severity } = useSelector(
     state => state.trigger
   );
-  const [cookies, setCookies, removeCookie] = useCookies(['_TuVbwpW']);
+  const [cookies, setCookie, removeCookie] = useCookies(['_TuVbwpW']);
   const [openNavBarMobile, setOpenNavBarMobile] = useState(false);
   const router = useRouter();
   const handleNavBarMobileOpen = () => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Grid,
   TextField,
@@ -39,14 +39,14 @@ const CustomerForm = ({ autocomplete, ...props }) => {
   };
 
   // fetch for autocomplete data
-  const customersFetch = async () => {
+  const customersFetch = useCallback(async () => {
     let response = await client.get('/api/pelanggan');
     setCustomers(response.data);
-  };
+  }, []);
 
   useEffect(() => {
     customersFetch();
-  }, []);
+  }, [customersFetch]);
 
   return (
     <>

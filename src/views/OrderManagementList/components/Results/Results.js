@@ -1,10 +1,3 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import clsx from 'clsx';
-import moment from 'moment';
-import PropTypes from 'prop-types';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import { makeStyles } from '@material-ui/styles';
 import {
   Button,
   Card,
@@ -12,8 +5,8 @@ import {
   CardContent,
   CardHeader,
   Checkbox,
+  colors,
   Divider,
-  Typography,
   Table,
   TableBody,
   TableCell,
@@ -21,11 +14,24 @@ import {
   TablePagination,
   TableRow,
   TableSortLabel,
-  colors
+  Typography
 } from '@material-ui/core';
-import client from 'utils/axios';
+import { makeStyles } from '@material-ui/styles';
+import clsx from 'clsx';
+import {
+  ComponentsGuard,
+  GenericMoreButton,
+  Label,
+  TableEditBar
+} from 'components';
+import moment from 'moment';
+import PropTypes from 'prop-types';
+import React, { useCallback, useMemo, useState } from 'react';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useDispatch } from 'react-redux';
-import { Label, GenericMoreButton, TableEditBar } from 'components';
+import { Link as RouterLink } from 'react-router-dom';
+import client from 'utils/axios';
+import { formatRupiah } from 'utils/formatRupiah';
 import { getComparator, stableSort } from 'utils/sortable';
 
 const headerTable = [
@@ -52,6 +58,14 @@ const headerTable = [
   {
     id: 'status',
     label: 'Status'
+  },
+  {
+    id: 'dp',
+    label: 'DP'
+  },
+  {
+    id: 'total',
+    label: 'Grand Total'
   }
 ];
 
@@ -65,6 +79,10 @@ const useStyles = makeStyles(theme => ({
   },
   inner: {
     minWidth: 1150
+  },
+  avatarPayment: {
+    maxWidth: 50,
+    height: 'auto'
   },
   actions: {
     padding: theme.spacing(0, 1),
@@ -183,11 +201,16 @@ const Results = props => {
 
   const paymentStatusColors = useMemo(() => {
     return {
-      batal: colors.grey[600],
-      dp: colors.orange[600],
-      lunas: colors.green[600],
+      'order batal': colors.red[500],
+      'new request': colors.blue[500],
+      'pembayaran dp': colors.orange[600],
+      'pembayaran lunas': colors.green[600],
       refund: colors.red[600],
-      'menunggu kepastian': colors.yellow[700]
+      'menunggu kepastian': colors.yellow[700],
+      'menunggu pembayaran': colors.indigo[700],
+      'Order Selesai': colors.grey[900],
+      service: colors.indigo[500],
+      produk: colors.blue[500]
     };
   }, []);
 
@@ -206,17 +229,19 @@ const Results = props => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={selectedOrders.length === orders.length}
-                        color="primary"
-                        indeterminate={
-                          selectedOrders.length > 0 &&
-                          selectedOrders.length < orders.length
-                        }
-                        onChange={handleSelectAll}
-                      />
-                    </TableCell>
+                    <ComponentsGuard roles={['TEKNISI']}>
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={selectedOrders.length === orders.length}
+                          color="primary"
+                          indeterminate={
+                            selectedOrders.length > 0 &&
+                            selectedOrders.length < orders.length
+                          }
+                          onChange={handleSelectAll}
+                        />
+                      </TableCell>
+                    </ComponentsGuard>
                     {headerTable.map(i => (
                       <TableCell
                         key={i.id}
@@ -246,14 +271,18 @@ const Results = props => {
                       <TableRow
                         key={order.id}
                         selected={selectedOrders.indexOf(order.id) !== -1}>
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={selectedOrders.indexOf(order.id) !== -1}
-                            color="primary"
-                            onChange={event => handleSelectOne(event, order.id)}
-                            value={selectedOrders.indexOf(order.id) !== -1}
-                          />
-                        </TableCell>
+                        <ComponentsGuard roles={['TEKNISI']}>
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={selectedOrders.indexOf(order.id) !== -1}
+                              color="primary"
+                              onChange={event =>
+                                handleSelectOne(event, order.id)
+                              }
+                              value={selectedOrders.indexOf(order.id) !== -1}
+                            />
+                          </TableCell>
+                        </ComponentsGuard>
                         <TableCell>
                           {/* {order.payment.ref} */}
                           <Typography variant="body2">
@@ -263,18 +292,51 @@ const Results = props => {
                           </Typography>
                         </TableCell>
                         <TableCell>{order.no_invoice}</TableCell>
-                        <TableCell>{order.tipe}</TableCell>
+                        <TableCell>
+                          {' '}
+                          <Label
+                            color={paymentStatusColors[order.tipe]}
+                            variant="contained">
+                            {order.tipe}
+                          </Label>
+                        </TableCell>
                         <TableCell>
                           {order.pelanggan.nama_depan}{' '}
                           {order.pelanggan.nama_belakang}
                         </TableCell>
-                        <TableCell>{order.payment?.name_payment}</TableCell>
+                        <TableCell>
+                          {order.payment ? (
+                            <img
+                              src={
+                                order.payment.image_path
+                                  ? `${process.env.REACT_APP_SERVER_URL}/${order.payment.image_path}`
+                                  : '/images/default.png'
+                              }
+                              alt={`Image Payment ${order.payment.name_payment}`}
+                              className={classes.avatarPayment}
+                            />
+                          ) : (
+                            'No payment method'
+                          )}
+                        </TableCell>
                         <TableCell>
                           <Label
                             color={paymentStatusColors[order.status]}
                             variant="contained">
                             {order.status}
                           </Label>
+                        </TableCell>
+                        <TableCell>
+                          {formatRupiah(
+                            order.dp ? order.dp.toString() : '0',
+                            'Rp '
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {formatRupiah(
+                            order.total ? order.total.toString() : '0',
+                            'Rp '
+                          )}
                         </TableCell>
                         <TableCell align="right">
                           <Button
