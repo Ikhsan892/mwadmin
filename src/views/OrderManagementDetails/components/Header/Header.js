@@ -121,7 +121,12 @@ const Header = props => {
         <Grid item>
           <Grid container spacing={2}>
             <Grid item>
-              <Button color="secondary" variant="outlined">
+              <Button
+                color="secondary"
+                variant="outlined"
+                onClick={() =>
+                  router.history.push(`/cetak-invoice/${order.id}`)
+                }>
                 <PrintIcon className={classes.deleteIcon} />
                 Cetak Invoice
               </Button>

@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 import client from 'utils/axios';
 import { formatRupiah } from 'utils/formatRupiah';
-import { ModalDP, ModalPayment } from '..';
+import { EditGaransi, ModalDP, ModalPayment, ModalShipping } from '..';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -45,13 +45,17 @@ const useStyles = makeStyles(theme => ({
 
 const OrderInfo = props => {
   const { order, className, ...rest } = props;
-  const { total_product } = useSelector(state => state.order);
+  const { total_product, total_biaya, total_diskon } = useSelector(
+    state => state.order
+  );
   const dispatch = useDispatch();
   const classes = useStyles();
 
   const [statusOrderan, setStatusOrderan] = useState(order.status);
   const [openModalDP, setOpenModalDP] = useState(false);
+  const [isEditGaransi, setIsEditGaransi] = useState(false);
   const [openModalPayment, setOpenModalPayment] = useState(false);
+  const [openModalShipping, setOpenModalShipping] = useState(false);
 
   const handleChange = async event => {
     event.persist();
@@ -94,15 +98,20 @@ const OrderInfo = props => {
   };
 
   const grand_total = useMemo(() => {
-    return total_product;
-  }, [total_product]);
+    return total_product + total_biaya - total_diskon;
+  }, [total_product, total_biaya, total_diskon]);
 
   useEffect(() => {
-    changeGrandTotal(total_product);
-  }, [total_product, changeGrandTotal]);
+    changeGrandTotal(total_product + total_biaya - total_diskon);
+  }, [total_product, total_biaya, total_diskon, changeGrandTotal]);
 
   return (
     <>
+      <ModalShipping
+        order={order.id}
+        open={openModalShipping}
+        handleClose={() => setOpenModalShipping(false)}
+      />
       <ModalPayment
         order={order.id}
         open={openModalPayment}
@@ -254,15 +263,59 @@ const OrderInfo = props => {
                     justifyContent="space-between"
                     alignItems="center">
                     <Grid item>
-                      {order.pengiriman?.nama_pengiriman ||
-                        'No Shipping Method'}
+                      {order.pengiriman ? (
+                        <Avatar
+                          alt={`Image Payment ${order.pengiriman.nama_pengiriman}`}
+                          src={
+                            order.pengiriman.image_path
+                              ? `${process.env.REACT_APP_SERVER_URL}/${order.pengiriman.image_path}`
+                              : '/images/default.png'
+                          }
+                        />
+                      ) : (
+                        'No Shipping Method'
+                      )}
                     </Grid>
+                    {order.pengiriman ? (
+                      <Grid item>
+                        {order.pengiriman.nama_pengiriman.toUpperCase()}
+                      </Grid>
+                    ) : null}
                     <Grid item>
-                      <IconButton size="small">
+                      <IconButton
+                        size="small"
+                        onClick={() => setOpenModalShipping(true)}>
                         <BorderColorIcon />
                       </IconButton>
                     </Grid>
                   </Grid>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Garansi</TableCell>
+                <TableCell>
+                  {isEditGaransi ? (
+                    <EditGaransi
+                      order={order.id}
+                      handleCloseEdit={() => setIsEditGaransi(false)}
+                    />
+                  ) : (
+                    <Grid
+                      container
+                      spacing={2}
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center">
+                      <Grid item>{order?.garansi || 'Tidak bergaransi'}</Grid>
+                      <Grid item>
+                        <IconButton
+                          size="small"
+                          onClick={() => setIsEditGaransi(true)}>
+                          <BorderColorIcon />
+                        </IconButton>
+                      </Grid>
+                    </Grid>
+                  )}
                 </TableCell>
               </TableRow>
             </TableBody>

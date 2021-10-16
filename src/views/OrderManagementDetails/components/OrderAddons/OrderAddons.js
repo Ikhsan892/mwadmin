@@ -228,7 +228,7 @@ const OrderItems = props => {
                 </TableHead>
                 <TableBody>
                   {selectedSparepart.map(item => (
-                    <TableRow key={uuidv4()}>
+                    <TableRow>
                       <TableCell>{item.nama_barang}</TableCell>
                       <TableCell>{item.tipe_barang}</TableCell>
                       <TableCell>

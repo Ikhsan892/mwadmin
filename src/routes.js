@@ -84,6 +84,11 @@ const routes = [
         component: lazy(() => import('views/Chat'))
       },
       {
+        path: '/cetak-invoice/:orderId',
+        exact: true,
+        component: lazy(() => import('views/CetakInvoice'))
+      },
+      {
         path: '/dashboards/analytics',
         exact: true,
         component: DashboardAnalyticsView

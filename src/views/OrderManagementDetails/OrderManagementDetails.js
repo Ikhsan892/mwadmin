@@ -4,7 +4,14 @@ import { CircularProgress, Grid } from '@material-ui/core';
 
 import axios from 'utils/axios';
 import { Page } from 'components';
-import { Header, OrderInfo, OrderItems, OrderAddons } from './components';
+import {
+  Header,
+  OrderInfo,
+  OrderItems,
+  OrderAddons,
+  OrderPriceAddons,
+  OrderDiskonPengurangan
+} from './components';
 import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles(theme => ({
@@ -67,6 +74,12 @@ const OrderManagementDetails = props => {
             ) : null}
             <Grid item xs={12}>
               <OrderAddons order={order} />
+            </Grid>
+            <Grid item xs={12}>
+              <OrderPriceAddons order={order} />
+            </Grid>
+            <Grid item xs={12}>
+              <OrderDiskonPengurangan order={order} />
             </Grid>
           </Grid>
         </Grid>
